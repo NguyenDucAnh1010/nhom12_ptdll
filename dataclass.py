@@ -18,6 +18,7 @@ class Student:
     idstudent: str
     namestudent: str
     phonenumber: str
+    email: str
     address: str
     idclass: str
     nameclass: str

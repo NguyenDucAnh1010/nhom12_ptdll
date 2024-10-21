@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from cassandra.cluster import Cluster  # Cassandra driver for Python
 from tkinter import messagebox
+from dataclass import Department,Student,Subject,Grade,Classes
 
 def query(home_callback=None):
     # Tạo giao diện tkinter
@@ -74,8 +75,15 @@ def query(home_callback=None):
     run_button.pack(side=tk.LEFT, padx=5)
 
     # Kết nối đến Cassandra Cluster
-    cluster = Cluster(['127.0.0.1'])  # Thay bằng IP Cassandra nếu khác
-    session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
+    try:
+        cluster = Cluster(['127.0.0.1'])  # Thay bằng IP Cassandra nếu khác
+    except Exception as e:
+        messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi kết nối tới cơ sở dữ liệu:\n{e}")
+
+    try:
+        session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
+    except Exception as e:
+        messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
 
     # Biến toàn cục column_names
     global column_names  # Khai báo column_names là toàn cục
@@ -153,16 +161,65 @@ def query(home_callback=None):
         try:
             # Gather the input data from the form
             new_data = {col: entry_widgets[col].get() for col in entry_widgets if entry_widgets[col].winfo_exists()}
-            
+
+            # Chuyển đổi giá trị sang loại dữ liệu thích hợp dựa trên lớp dataclass
+            if selected_table == 'Department':
+                new_record = Department(
+                    iddepartment=new_data['iddepartment'],
+                    namedepartment=new_data['namedepartment']
+                )
+                values = (new_record.iddepartment, new_record.namedepartment)
+
+            elif selected_table == 'Classes':
+                new_record = Classes(
+                    idclass=new_data['idclass'],
+                    nameclass=new_data['nameclass'],
+                    iddepartment=new_data['iddepartment'],
+                    namedepartment=new_data['namedepartment']
+                )
+                values = (new_record.idclass, new_record.iddepartment, new_record.nameclass, new_record.namedepartment)
+
+            elif selected_table == 'Student':
+                new_record = Student(
+                    idstudent=new_data['idstudent'],
+                    namestudent=new_data['namestudent'],
+                    phonenumber=new_data['phonenumber'],
+                    email=new_data['email'],
+                    address=new_data['address'],
+                    idclass=new_data['idclass'],
+                    nameclass=new_data['nameclass'],
+                    iddepartment=new_data['iddepartment'],
+                    namedepartment=new_data['namedepartment']
+                )
+                values = (new_record.idstudent, new_record.address, new_record.email, new_record.idclass, new_record.iddepartment, new_record.nameclass, new_record.namedepartment, new_record.namestudent, new_record.phonenumber)
+
+            elif selected_table == 'Subject':
+                new_record = Subject(
+                    idsubject=new_data['idsubject'],
+                    namesubject=new_data['namesubject'],
+                    credit=int(new_data['credit'])  # Chuyển đổi credit thành số nguyên
+                )
+                values = (new_record.idsubject, new_record.credit, new_record.namesubject)
+
+            elif selected_table == 'Grade':
+                new_record = Grade(
+                    idstudent=new_data['idstudent'],
+                    namestudent=new_data['namestudent'],
+                    idsubject=new_data['idsubject'],
+                    namesubject=new_data['namesubject'],
+                    grade=float(new_data['grade'])  # Chuyển đổi grade thành số thực
+                )
+                values = (new_record.idsubject, new_record.grade, new_record.idstudent, new_record.namestudent,  new_record.namesubject)
+
             # Prepare the columns and values for the INSERT query
             columns = ", ".join(new_data.keys())
-            values = ", ".join(f"'{value}'" for value in new_data.values())  # Quote each value as Cassandra expects strings
+            placeholders = ", ".join(['%s'] * len(values))  # Dùng %s để thay thế cho các giá trị
 
             # Construct the INSERT INTO query
-            insert_query = f"INSERT INTO {selected_table} ({columns}) VALUES ({values});"
+            insert_query = f"INSERT INTO {selected_table} ({columns}) VALUES ({placeholders});"
             
             # Execute the insert query
-            session.execute(insert_query)
+            session.execute(insert_query, values)  # Gửi values vào execute
             messagebox.showinfo("Thông báo", f"Dữ liệu đã được thêm vào {selected_table}")
             
             # Reload the table to reflect the newly inserted data
