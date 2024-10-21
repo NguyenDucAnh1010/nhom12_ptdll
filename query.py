@@ -1,12 +1,21 @@
 import tkinter as tk
 from tkinter import ttk
-from abcd.failedStudents import run_spark_job
+from tkinter import messagebox
+import abcd.failedStudents as failedStudents
 
 def query(home_callback=None):
     # Tạo giao diện tkinter
     root = tk.Tk()
     root.title("Ứng dụng Spark vào Cassandra")
     root.geometry("800x600")
+
+    def on_closing():
+        # Hiện thông báo xác nhận trước khi đóng
+        if messagebox.askokcancel("Thoát", "Bạn có chắc chắn muốn thoát không?"):
+            root.destroy() # Đóng cửa sổ
+            home_callback.destroy() # Đóng cửa sổ
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
 
     # Từ điển queries với khóa và mô tả truy vấn
     queries = {
@@ -42,7 +51,7 @@ def query(home_callback=None):
 
     # Tạo từ điển ánh xạ tên truy vấn với các hàm tương ứng
     query_functions = {
-        "querie9": run_spark_job
+        "querie9": failedStudents.run_spark_job
     }
 
     def create_table(query_function):
@@ -81,7 +90,7 @@ def query(home_callback=None):
     def exit_query():
         root.destroy()  # Đóng giao diện hiện tại
         if home_callback:
-            home_callback()  # Gọi lại hàm từ home
+            home_callback.deiconify()  # Gọi lại hàm từ home
 
     # Khởi động giao diện
     root.mainloop()

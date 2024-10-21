@@ -11,14 +11,14 @@ def on_button_click(main_window, button_name):
 
         # Trì hoãn import query để tránh vòng lặp
         import query
-        query.query(home_callback=main_window.deiconify)  # Gọi lại home khi thoát khỏi query
+        query.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
 
     elif button_name == "Import":
         main_window.withdraw()  # Ẩn giao diện chính
 
         # Trì hoãn import query để tránh vòng lặp
         import import_data
-        import_data.query(home_callback=main_window.deiconify)  # Gọi lại home khi thoát khỏi query
+        import_data.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
 
 def home():
     main_window = tk.Tk()
