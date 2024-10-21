@@ -11,19 +11,14 @@ class Classes:
     idclass: str
     nameclass: str
     iddepartment: str
-    namedepartment: str
 
 @dataclass
 class Student:
     idstudent: str
     namestudent: str
     phonenumber: str
-    email: str
     address: str
     idclass: str
-    nameclass: str
-    iddepartment: str
-    namedepartment: str
 
 @dataclass
 class Subject:
@@ -34,7 +29,5 @@ class Subject:
 @dataclass
 class Grade:
     idstudent: str
-    namestudent: str
     idsubject: str
-    namesubject: str
     grade: float
