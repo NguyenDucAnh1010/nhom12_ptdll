@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from cassandra.cluster import Cluster  # Cassandra driver for Python
+from cassandra.query import SimpleStatement
 from tkinter import messagebox
+import abcd.import_cmd as import_cmd
 from dataclass import Department,Student,Subject,Grade,Classes
 
 def query(home_callback=None):
@@ -43,6 +45,14 @@ def query(home_callback=None):
     tk.Label(top_left_frame, text="Nhập dữ liệu vào bảng:", bg='lightgray').pack(side=tk.LEFT, padx=10, pady=10)
 
     # Frame cho các Label và Entry động sẽ được sinh sau khi chọn bảng
+    CSDL_button_frame = tk.Frame(left_frame, bg='lightgray')
+    CSDL_button_frame.pack(fill=tk.X, padx=10, pady=10)  # Lùi form xuống với pady=10
+
+    # Nút thêm dữ liệu nằm trong frame mới
+    CSDL_button = tk.Button(CSDL_button_frame, text="Tạo CSDL tự động", command=lambda: create_CSDL())
+    CSDL_button.pack(side=tk.BOTTOM, padx=5, pady=5)
+
+    # Frame cho các Label và Entry động sẽ được sinh sau khi chọn bảng
     dynamic_input_frame = tk.Frame(left_frame, bg='lightgray')
     dynamic_input_frame.pack(fill=tk.X, padx=10, pady=10)  # Lùi form xuống với pady=10
 
@@ -79,11 +89,43 @@ def query(home_callback=None):
         cluster = Cluster(['127.0.0.1'])  # Thay bằng IP Cassandra nếu khác
     except Exception as e:
         messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi kết nối tới cơ sở dữ liệu:\n{e}")
-
+    global keyspace_exists,session
+    keyspace_exists = True
     try:
         session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
     except Exception as e:
         messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
+        keyspace_exists = False
+
+    def create_CSDL():
+        global keyspace_exists,session
+        if not keyspace_exists:
+            try:
+                session = cluster.connect()  # Kết nối mà không chỉ định keyspace
+                # Đọc nội dung tệp table.cql và thực thi
+                # Đọc tệp và thực hiện từng câu lệnh một
+                with open('./Table.cql', 'r') as cql_file:
+                    cql_script = cql_file.read()
+                    # Tách các câu lệnh bằng dấu chấm phẩy
+                    commands = cql_script.split(';')
+                    
+                    for command in commands:
+                        command = command.strip()  # Xóa khoảng trắng
+                        if command:  # Kiểm tra nếu câu lệnh không rỗng
+                            try:
+                                session.execute(SimpleStatement(command))  # Thực thi từng câu lệnh
+                            except Exception as e:
+                                print(f"Lỗi khi thực thi câu lệnh: {command}\n{e}")
+
+                keyspace_exists = True
+                # Kết nối lại với keyspace đã tạo
+                session = cluster.connect('nhom12')
+                import_cmd.run_spark_job()
+
+            except Exception as e:
+                print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
+                messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
+                keyspace_exists = False
 
     # Biến toàn cục column_names
     global column_names  # Khai báo column_names là toàn cục
