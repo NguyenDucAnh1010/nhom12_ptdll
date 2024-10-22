@@ -30,5 +30,5 @@ class Subject:
 class Grade:
     idstudent: str
     idsubject: str
-    term: int
     grade: float
+    term: int

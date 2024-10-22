@@ -6,3 +6,5 @@ B1: cop tất cả file và thư mục trong thư mục file_in_docker vào spar
 
 B2: vào cassandra xoá KeySpace nhom12
     DROP KEYSPACE nhom12;
+
+B3: khởi chạy home.py

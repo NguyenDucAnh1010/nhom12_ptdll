@@ -95,7 +95,7 @@ def query(home_callback=None):
 
     # Combobox hiển thị lựa chọn loại tìm kiếm
     search_combobox = ttk.Combobox(search_frame, textvariable=selected_search, values=searches, font=("Arial", 14))
-    search_combobox.set(list(searches.values())[0])  # Đặt giá trị mặc định là mô tả của truy vấn đầu tiên
+    search_combobox.set(searches[0])  # Đặt giá trị mặc định là mô tả của truy vấn đầu tiên
     search_combobox.pack(side=tk.LEFT, fill=tk.X, padx=10, pady=10)
 
     # Entry hiển thị mô tả truy vấn
@@ -174,7 +174,7 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                tree = create_table(searchQuery.run_spark_job())
+                tree = create_table_query(searchQuery.run_spark_job())
                 tree.pack(fill=tk.BOTH, expand=True)
         else:
             select_query()
@@ -198,7 +198,16 @@ def query(home_callback=None):
     def select_query():
         global column_names  # Khai báo column_names là toàn cục
         global selected_table
+        global keyspace_exists,session
         selected_table = selected_query.get()  # Get the selected table
+
+        if not keyspace_exists:
+            try:
+                session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
+            except Exception as e:
+                messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
+                keyspace_exists = False
+                return
         
         # Prepare and execute query to fetch all rows from the selected table
         query = f"SELECT * FROM {selected_table};"
@@ -311,10 +320,10 @@ def query(home_callback=None):
                 new_record = Grade(
                     idstudent=new_data['idstudent'],
                     idsubject=new_data['idsubject'],
-                    term=int(new_data['tern']),
-                    grade=float(new_data['grade'])  # Chuyển đổi grade thành số thực
+                    grade=float(new_data['grade']),  # Chuyển đổi grade thành số thực
+                    term=int(new_data['term'])
                 )
-                values = ( new_record.idstudent, new_record.idsubject, new_record.term, new_record.grade)
+                values = ( new_record.idstudent, new_record.idsubject, new_record.grade, new_record.term)
 
             # Prepare the columns and values for the INSERT query
             columns = ", ".join(new_data.keys())
@@ -368,13 +377,11 @@ def query(home_callback=None):
         except Exception as e:
             messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi xóa dữ liệu: {e}")
 
-
     # Hàm thoát
     def exit_query():
         root.destroy()
         if home_callback:
             home_callback.deiconify()
-
 
     # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
     paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
