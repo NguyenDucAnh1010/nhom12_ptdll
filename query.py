@@ -8,6 +8,7 @@ def query(home_callback=None):
     root = tk.Tk()
     root.title("Ứng dụng Spark vào Cassandra")
     root.geometry("800x600")
+    root.state('zoomed')
 
     def on_closing():
         # Hiện thông báo xác nhận trước khi đóng
@@ -19,16 +20,15 @@ def query(home_callback=None):
 
     # Từ điển queries với khóa và mô tả truy vấn
     queries = {
-        "querie1": "tính điểm trung bình môn theo từng môn",
-        "querie2": "sinh viên có điểm cao || thấp cao nhất",
-        "querie3": "danh sách sinh viên || môn …",
-        "querie4": "môn || lớp … có nhiều sinh viên nhất",
-        "querie5": "top N sinh viên với …",
-        "querie6": "xóa 1 cột thông tin trong sinhvien",
-        "querie7": "thêm cột thông tin trong sv/lop/khoa/diem",
-        "querie8": "tính điểm gpa của từng sinh viên",
-        "querie9": "thống kê số sinh viên trượt môn (< 4)",
-        "querie10": "tổng sinh viên theo khoa || lớp",
+        "querie1": "Danh sách sinh viên theo từng môn",
+        "querie2": "Danh sách học bổng với điều kiện không có môn nào điểm dưới 4",
+        "querie3": "Phân loại sinh viên theo điểm trung bình (>ĐTB -> kém, <ĐTB -> giỏi)",
+        "querie4": "Top 10 sinh viên có điểm cao nhất theo từng môn",
+        "querie5": "Thông tin chi tiết của sinh viên",
+        "querie6": "Danh sách điểm của sinh viên theo từng môn",
+        "querie7": "Tính điểm gpa của từng sinh viên",
+        "querie8": "Thống kê số sinh viên trượt môn (< 4)",
+        "querie9": "Tổng sinh viên theo khoa || lớp",
     }
     selected_query = tk.StringVar(root)
     # query_combobox.set(list(queries.values())[0])  # Đặt giá trị mặc định là mô tả của truy vấn đầu tiên
@@ -38,20 +38,20 @@ def query(home_callback=None):
     query_frame.pack(fill=tk.X, padx=10, pady=10)
 
     # Tạo nút Thoát và đặt nó nằm trước Combobox, cùng dòng
-    exit_button = tk.Button(query_frame, text="Thoát", command=lambda: exit_query())
+    exit_button = tk.Button(query_frame, text="Thoát", font=("Arial", 14), command=lambda: exit_query())
     exit_button.pack(side=tk.LEFT, padx=5)
 
     # Tạo Combobox để hiển thị mô tả truy vấn, giá trị là các khóa trong từ điển queries
-    query_combobox = ttk.Combobox(query_frame, textvariable=selected_query, values=list(queries.values()))
+    query_combobox = ttk.Combobox(query_frame, textvariable=selected_query, values=list(queries.values()), font=("Arial", 14))
     query_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=10)
 
     # Nút chạy truy vấn nằm trên cùng một dòng với Combobox, ngay sau Combobox
-    run_button = tk.Button(query_frame, text="Chạy truy vấn", command=lambda: select_query())
+    run_button = tk.Button(query_frame, text="Chạy truy vấn", font=("Arial", 14), command=lambda: select_query())
     run_button.pack(side=tk.LEFT, padx=5)
 
     # Tạo từ điển ánh xạ tên truy vấn với các hàm tương ứng
     query_functions = {
-        "querie9": failedStudents.run_spark_job
+        "querie8": failedStudents.run_spark_job
     }
 
     def create_table(query_function):

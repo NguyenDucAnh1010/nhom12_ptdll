@@ -4,6 +4,7 @@ from cassandra.cluster import Cluster  # Cassandra driver for Python
 from cassandra.query import SimpleStatement
 from tkinter import messagebox
 import abcd.import_cmd as import_cmd
+import abcd.searchQuery as searchQuery
 from dataclass import Department,Student,Subject,Grade,Classes
 
 def query(home_callback=None):
@@ -21,13 +22,9 @@ def query(home_callback=None):
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
-    # Từ điển queries với khóa và mô tả truy vấn
-    queries = ["Department", "Class", "Student", "Subject", "Grade"]
-    selected_query = tk.StringVar(root)
-
     # Tạo PanedWindow chia 2 bên
     paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
-    paned_window.pack(fill=tk.BOTH, expand=True)
+    paned_window.pack(fill=tk.BOTH, expand=True,padx=50, pady=50)
 
     # Tạo frame bên trái cho phần nhập dữ liệu
     left_frame = tk.Frame(paned_window, bg='lightgray')
@@ -76,6 +73,10 @@ def query(home_callback=None):
     query_frame = tk.Frame(right_frame)
     query_frame.pack(fill=tk.X, padx=10, pady=10)
 
+    # Từ điển queries với khóa và mô tả truy vấn
+    queries = ["Department", "Class", "Student", "Subject", "Grade"]
+    selected_query = tk.StringVar(root)
+
     # Combobox hiển thị mô tả truy vấn
     query_combobox = ttk.Combobox(query_frame, textvariable=selected_query, values=queries, font=("Arial", 14))
     query_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=10)
@@ -84,11 +85,20 @@ def query(home_callback=None):
     run_button = tk.Button(query_frame, text="Xem tất cả dữ liệu", font=("Arial", 14), command=lambda: select_query())
     run_button.pack(side=tk.LEFT, padx=5)
 
-    # Tạo Frame chứa Combobox và Button
+    # Tạo Frame chứa Combobox, Entry  và Button
     search_frame = tk.Frame(right_frame)
     search_frame.pack(fill=tk.X, padx=10, pady=10)
 
-    # Combobox hiển thị mô tả truy vấn
+    # Từ điển queries với khóa và mô tả truy vấn
+    searches = ["Cassandra","Spark"]
+    selected_search = tk.StringVar(root)
+
+    # Combobox hiển thị lựa chọn loại tìm kiếm
+    search_combobox = ttk.Combobox(search_frame, textvariable=selected_search, values=searches, font=("Arial", 14))
+    search_combobox.set(list(searches.values())[0])  # Đặt giá trị mặc định là mô tả của truy vấn đầu tiên
+    search_combobox.pack(side=tk.LEFT, fill=tk.X, padx=10, pady=10)
+
+    # Entry hiển thị mô tả truy vấn
     search_input = ttk.Entry(search_frame, font=("Arial", 14))
     search_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=10)
 
@@ -116,7 +126,7 @@ def query(home_callback=None):
                 session = cluster.connect()  # Kết nối mà không chỉ định keyspace
                 # Đọc nội dung tệp table.cql và thực thi
                 # Đọc tệp và thực hiện từng câu lệnh một
-                with open('./Table.cql', 'r') as cql_file:
+                with open('./table.sql', 'r') as cql_file:
                     cql_script = cql_file.read()
                     # Tách các câu lệnh bằng dấu chấm phẩy
                     commands = cql_script.split(';')
@@ -149,20 +159,40 @@ def query(home_callback=None):
         global column_names  # Khai báo column_names là toàn cục
         global selected_table
         search_label = search_input.get()
+        search_select = search_combobox.get()
 
-        if selected_table in queries and search_label != "" :
-            # Prepare and execute query to fetch all rows from the selected table
-            query = f"SELECT * FROM {selected_table} WHERE {column_names[0]} = '{search_label}';"
-            rows = session.execute(query)
+        if selected_table in queries and search_label != "" and search_select != "":
+            if search_select == "Cassandra":
+                # Prepare and execute query to fetch all rows from the selected table
+                query = f"SELECT * FROM {selected_table} WHERE {column_names[0]} = '{search_label}';"
+                rows = session.execute(query)
 
-            # Get column names from the metadata
-            column_names = rows.column_names
-            data = [list(row) for row in rows]
+                # Get column names from the metadata
+                column_names = rows.column_names
+                data = [list(row) for row in rows]
 
-            # Create table with the fetched data
-            create_table(column_names, data)
+                # Create table with the fetched data
+                create_table(column_names, data)
+            elif search_select == "Spark":
+                tree = create_table(searchQuery.run_spark_job())
+                tree.pack(fill=tk.BOTH, expand=True)
         else:
             select_query()
+
+    def create_table_query(query_function):
+        title_column, data = query_function()
+
+        tree = ttk.Treeview(root, columns=title_column, show='headings')
+
+        for col in title_column:
+            tree.heading(col, text=col)
+            tree.column(col, width=80)
+        
+        for row in data:
+            columns = [pair.split(": ")[1] for pair in row.split(", ")]
+            tree.insert('', tk.END, values=columns)
+
+        return tree
 
     # Hàm chọn bảng và lấy dữ liệu
     def select_query():
@@ -281,9 +311,10 @@ def query(home_callback=None):
                 new_record = Grade(
                     idstudent=new_data['idstudent'],
                     idsubject=new_data['idsubject'],
+                    term=int(new_data['tern']),
                     grade=float(new_data['grade'])  # Chuyển đổi grade thành số thực
                 )
-                values = ( new_record.idstudent, new_record.idsubject, new_record.grade)
+                values = ( new_record.idstudent, new_record.idsubject, new_record.term, new_record.grade)
 
             # Prepare the columns and values for the INSERT query
             columns = ", ".join(new_data.keys())

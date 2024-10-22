@@ -44,7 +44,7 @@ def home():
     for i, (text, icon) in enumerate(buttons_info):
         btn = tk.Button(
             button_frame, 
-            text=f"{icon}\n\n{text}",
+            text=f"{icon}\n\n{text}",   
             font=("Arial", 14), 
             width=12, height=4,
             command=lambda name=text: on_button_click(main_window, name)

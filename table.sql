@@ -18,7 +18,7 @@ CREATE TABLE nhom12.Student (
     NameStudent text,
     PhoneNumber text, 
     Address text, 
-    IDClass text, 
+    IDClass text
 );
 
 CREATE TABLE nhom12.Subject (
@@ -29,7 +29,8 @@ CREATE TABLE nhom12.Subject (
 
 CREATE TABLE nhom12.Grade (
     IDStudent text, 
-    IDSubject text, 
-    Grade float, 
+    IDSubject text,
+    Term int,
+    Grade float,
     PRIMARY KEY (IDStudent, IDSubject)
 );
