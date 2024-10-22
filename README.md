@@ -1,6 +1,4 @@
-# nhom12_ptdll
-
-# Hướng dẫn chạy:
+# Hướng dẫn chạy
 
 B1: cop tất cả file và thư mục trong thư mục file_in_docker vào spark-master:/otp/shared
     có thể dùng docker cp vị trí thư mục spark-master:/otp/shared
