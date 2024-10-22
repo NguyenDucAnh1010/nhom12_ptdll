@@ -74,7 +74,7 @@ def query(home_callback=None):
     query_frame.pack(fill=tk.X, padx=10, pady=10)
 
     # Từ điển queries với khóa và mô tả truy vấn
-    queries = ["Department", "Class", "Student", "Subject", "Grade"]
+    queries = ["department", "class", "student", "subject", "grade"]
     selected_query = tk.StringVar(root)
 
     # Combobox hiển thị mô tả truy vấn
@@ -174,26 +174,10 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                tree = create_table_query(searchQuery.run_spark_job())
-                tree.pack(fill=tk.BOTH, expand=True)
+                create_table_search(search_label)
         else:
             select_query()
-
-    def create_table_query(query_function):
-        title_column, data = query_function()
-
-        tree = ttk.Treeview(root, columns=title_column, show='headings')
-
-        for col in title_column:
-            tree.heading(col, text=col)
-            tree.column(col, width=80)
         
-        for row in data:
-            columns = [pair.split(": ")[1] for pair in row.split(", ")]
-            tree.insert('', tk.END, values=columns)
-
-        return tree
-
     # Hàm chọn bảng và lấy dữ liệu
     def select_query():
         global column_names  # Khai báo column_names là toàn cục
@@ -222,6 +206,36 @@ def query(home_callback=None):
 
         # Tạo form nhập dữ liệu động dựa trên các cột của bảng
         create_dynamic_inputs(column_names)
+
+    def create_table_search(search_label):
+        data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
+
+        # Xóa Treeview cũ nếu có
+        for widget in right_frame.winfo_children():
+            if isinstance(widget, ttk.Treeview):
+                widget.destroy()
+            if isinstance(widget, ttk.Scrollbar):
+                widget.destroy()
+
+        # Tạo Treeview với tên cột
+        tree = ttk.Treeview(right_frame, columns=column_names, show='headings')
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Tạo Scrollbar
+        scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Liên kết scrollbar với treeview
+        tree.configure(yscrollcommand=scrollbar.set)
+
+        for col in column_names:
+            tree.heading(col, text=col, anchor=tk.CENTER)
+            tree.column(col, width=50, anchor=tk.CENTER)
+
+        # Chèn dữ liệu vào Treeview
+        for row in data:
+            columns = [pair.split(": ")[1] for pair in row.split(", ")]
+            tree.insert('', tk.END, values=columns)
 
     # Tạo Treeview hiển thị dữ liệu
     def create_table(column_names, data):
@@ -283,14 +297,14 @@ def query(home_callback=None):
             new_data = {col: entry_widgets[col].get() for col in entry_widgets if entry_widgets[col].winfo_exists()}
 
             # Chuyển đổi giá trị sang loại dữ liệu thích hợp dựa trên lớp dataclass
-            if selected_table == 'Department':
+            if selected_table == 'department':
                 new_record = Department(
                     iddepartment=new_data['iddepartment'],
                     namedepartment=new_data['namedepartment']
                 )
                 values = (new_record.iddepartment, new_record.namedepartment)
 
-            elif selected_table == 'Classes':
+            elif selected_table == 'classes':
                 new_record = Classes(
                     idclass=new_data['idclass'],
                     nameclass=new_data['nameclass'],
@@ -298,7 +312,7 @@ def query(home_callback=None):
                 )
                 values = (new_record.idclass, new_record.iddepartment, new_record.nameclass)
 
-            elif selected_table == 'Student':
+            elif selected_table == 'student':
                 new_record = Student(
                     idstudent=new_data['idstudent'],
                     namestudent=new_data['namestudent'],
@@ -308,7 +322,7 @@ def query(home_callback=None):
                 )
                 values = (new_record.idstudent, new_record.address, new_record.idclass, new_record.namestudent, new_record.phonenumber)
 
-            elif selected_table == 'Subject':
+            elif selected_table == 'subject':
                 new_record = Subject(
                     idsubject=new_data['idsubject'],
                     namesubject=new_data['namesubject'],
@@ -316,7 +330,7 @@ def query(home_callback=None):
                 )
                 values = (new_record.idsubject, new_record.credit, new_record.namesubject)
 
-            elif selected_table == 'Grade':
+            elif selected_table == 'grade':
                 new_record = Grade(
                     idstudent=new_data['idstudent'],
                     idsubject=new_data['idsubject'],
