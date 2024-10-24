@@ -1,12 +1,12 @@
 import argparse
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
+from pyspark.sql import functions as F
 
 # Sử dụng argparse để lấy tham số từ dòng lệnh
 parser = argparse.ArgumentParser(description='Process some inputs for Spark job.')
 parser.add_argument('--selected_table', required=True, help='Path to the input CSV file')
-parser.add_argument('--column_names', required=True, help='Path to the output folder')
-parser.add_argument('--search_label', required=True, help='Subject (mon hoc)')
+parser.add_argument('--search_label', required=True, help='Search label for filtering')
 args = parser.parse_args()
 
 # Cấu hình Spark
@@ -22,7 +22,6 @@ spark = SparkSession.builder.config(conf=conf).getOrCreate()
 
 # Đọc thông tin từ dòng lệnh
 selected_table = args.selected_table
-column_names = args.column_names
 search_label = args.search_label
 
 # Load the Cassandra table into a DataFrame
@@ -31,8 +30,16 @@ df = spark.read \
     .options(table=selected_table, keyspace='nhom12') \
     .load()
 
-# Filter the DataFrame based on the search criteria
-filtered_df = df.filter(df[column_names] == search_label)
+# Lấy danh sách các cột trong DataFrame
+columns = df.columns
+
+# Tạo điều kiện tìm kiếm trên toàn bộ cột
+filter_condition = F.lit(False)  # Điều kiện ban đầu là False
+for col in columns:
+    filter_condition = filter_condition | (F.col(col).cast("string").contains(search_label))
+
+# Áp dụng điều kiện lọc cho DataFrame
+filtered_df = df.filter(filter_condition)
 
 # Thu thập kết quả sau khi lọc
 results = filtered_df.collect()

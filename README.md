@@ -1,10 +1,9 @@
 # Hướng dẫn chạy
 
-B1: cop tất cả file và thư mục trong thư mục file_in_docker vào spark-master:/otp/shared
-    có thể dùng docker cp vị trí thư mục spark-master:/otp/shared
-    hoặc cop thẳng vào thư mục ngoài
+B1: khởi chạy home.py
 
-B2: vào cassandra xoá KeySpace nhom12
-    DROP KEYSPACE nhom12;
+B2: vào Import
 
-B3: khởi chạy home.py
+B3: ấn nút xoá CSDL
+
+B4: ấn nút tạo CSDL tự động
