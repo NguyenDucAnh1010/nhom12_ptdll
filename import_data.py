@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 from tkinter import ttk
 from cassandra.cluster import Cluster  # Cassandra driver for Python
@@ -68,6 +69,10 @@ def query(home_callback=None):
     # Tạo frame bên phải cho combobox và bảng kết quả
     right_frame = tk.Frame(paned_window)
     paned_window.add(right_frame)
+
+    # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
+    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
+    paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
 
     # Tạo Frame chứa Combobox và Button
     query_frame = tk.Frame(right_frame)
@@ -143,7 +148,8 @@ def query(home_callback=None):
                 keyspace_exists = True
                 # Kết nối lại với keyspace đã tạo
                 session = cluster.connect('nhom12')
-                import_cmd.run_spark_job()
+                # Tạo và khởi động luồng
+                threading.Thread(target=import_cmd.run_spark_job()).start()
 
             except Exception as e:
                 print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
@@ -175,39 +181,10 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                create_table_search(search_label)
+                # Tạo và khởi động luồng
+                threading.Thread(target=create_table_search(search_label)).start()
         else:
             select_query()
-        
-    # Hàm chọn bảng và lấy dữ liệu
-    def select_query():
-        global column_names  # Khai báo column_names là toàn cục
-        global selected_table
-        global keyspace_exists,session
-        selected_table = selected_query.get()  # Get the selected table
-
-        if not keyspace_exists:
-            try:
-                cluster = Cluster(['127.0.0.1'])
-                session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
-            except Exception as e:
-                messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
-                keyspace_exists = False
-                return
-        
-        # Prepare and execute query to fetch all rows from the selected table
-        query = f"SELECT * FROM {selected_table};"
-        rows = session.execute(query)
-
-        # Get column names from the metadata
-        column_names = rows.column_names
-        data = [list(row) for row in rows]
-
-        # Create table with the fetched data
-        create_table(column_names, data)
-
-        # Tạo form nhập dữ liệu động dựa trên các cột của bảng
-        create_dynamic_inputs(column_names)
 
     def create_table_search(search_label):
         data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
@@ -238,6 +215,36 @@ def query(home_callback=None):
         for row in data:
             columns = [pair.split(": ")[1] for pair in row.split(", ")]
             tree.insert('', tk.END, values=columns)
+        
+    # Hàm chọn bảng và lấy dữ liệu
+    def select_query():
+        global column_names  # Khai báo column_names là toàn cục
+        global selected_table
+        global keyspace_exists,session
+        selected_table = selected_query.get()  # Get the selected table
+
+        if not keyspace_exists:
+            try:
+                cluster = Cluster(['127.0.0.1'])
+                session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
+            except Exception as e:
+                messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
+                keyspace_exists = False
+                return
+        
+        # Prepare and execute query to fetch all rows from the selected table
+        query = f"SELECT * FROM {selected_table};"
+        rows = session.execute(query)
+
+        # Get column names from the metadata
+        column_names = rows.column_names
+        data = [list(row) for row in rows]
+
+        # Create table with the fetched data
+        create_table(column_names, data)
+
+        # Tạo form nhập dữ liệu động dựa trên các cột của bảng
+        create_dynamic_inputs(column_names)
 
     # Tạo Treeview hiển thị dữ liệu
     def create_table(column_names, data):
@@ -398,9 +405,5 @@ def query(home_callback=None):
         root.destroy()
         if home_callback:
             home_callback.deiconify()
-
-    # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
-    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
-    paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
 
     root.mainloop()
