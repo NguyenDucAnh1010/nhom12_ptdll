@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import subprocess
 
 def on_button_click(main_window, button_name):
     if button_name == "Thoát":
@@ -20,7 +21,17 @@ def on_button_click(main_window, button_name):
         import import_data
         import_data.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
 
+# Hàm thực thi lệnh spark-submit bên trong container Docker và chỉ lấy kết quả
+def run_spark_job():
+    command = "docker cp ./shared/ spark-master:/opt/"
+    
+    try:
+        subprocess.run(command, shell=True, capture_output=True, text=True)
+    except Exception as e:
+        return [], [f"Lỗi khi thực thi: {e}"]
+    
 def home():
+    run_spark_job()
     main_window = tk.Tk()
     main_window.title("Chương trình ứng dụng Spark vào Cassandra")
     main_window.geometry("800x600")
