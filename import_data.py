@@ -130,35 +130,16 @@ def query(home_callback=None):
 
     def delete_CSDL():
         global keyspace_exists,session
-        if not keyspace_exists:
+        if keyspace_exists:
             try:
                 cluster = Cluster(['127.0.0.1'])
                 session = cluster.connect()  # Kết nối mà không chỉ định keyspace
-                # Đọc nội dung tệp table.cql và thực thi
-                # Đọc tệp và thực hiện từng câu lệnh một
-                with open('./table.sql', 'r') as cql_file:
-                    cql_script = cql_file.read()
-                    # Tách các câu lệnh bằng dấu chấm phẩy
-                    commands = cql_script.split(';')
-                    
-                    for command in commands:
-                        command = command.strip()  # Xóa khoảng trắng
-                        if command:  # Kiểm tra nếu câu lệnh không rỗng
-                            try:
-                                session.execute(SimpleStatement(command))  # Thực thi từng câu lệnh
-                            except Exception as e:
-                                print(f"Lỗi khi thực thi câu lệnh: {command}\n{e}")
-
-                keyspace_exists = True
-                # Kết nối lại với keyspace đã tạo
-                session = cluster.connect('nhom12')
-                # Tạo và khởi động luồng
-                threading.Thread(target=import_cmd.run_spark_job()).start()
+                session.execute("DROP KEYSPACE nhom12;")
+                messagebox.showinfo("Thông báo", f"Đã xoá CSDL thành công!")
+                keyspace_exists = False
 
             except Exception as e:
-                print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
-                messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
-                keyspace_exists = False
+                messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")             
 
     def create_CSDL():
         global keyspace_exists,session
@@ -188,7 +169,6 @@ def query(home_callback=None):
                 threading.Thread(target=import_cmd.run_spark_job()).start()
 
             except Exception as e:
-                print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
                 messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
                 keyspace_exists = False
 
