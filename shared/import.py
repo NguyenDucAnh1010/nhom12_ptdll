@@ -3,7 +3,7 @@ from pyspark import SparkConf
 
 # Cấu hình Spark
 conf = SparkConf() \
-    .setAppName("MapReduce") \
+    .setAppName("Import") \
     .setMaster("spark://spark-master:7077") \
     .set("spark.executor.heartbeatInterval", "100s") \
     .set("spark.network.timeout", "600s") \
