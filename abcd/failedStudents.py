@@ -13,11 +13,12 @@ def run_spark_job():
         # Tách các dòng dựa trên dấu phẩy hoặc khoảng trắng, sau đó lọc ra các dòng chứa ID sinh viên
         output_lines = result.stdout.split("\n")
         # filtered_output = "\n".join([line for line in output_lines if line.startswith("ID sinh viên")])
-        filtered_output = [line for line in output_lines if line.startswith("ID sinh viên")]  # Đây là mảng
+        filtered_output = [line for line in output_lines if line.startswith("Khoa")]  # Đây là mảng
+        # print("abc: ",filtered_output)
         if not filtered_output:
             raise ValueError("Không tìm thấy kết quả phù hợp")
 
-        title_column = ["Mã sinh viên", "Tên sinh viên", "Mã môn học", "Tên môn học", "Điểm"]
+        title_column = ["Khoa", "Môn", "Lớp", "Kỳ", "Mã sinh viên", "Tên sinh viên", "Điểm"]
 
         return title_column, filtered_output
     except Exception as e:
