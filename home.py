@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from QueryHome.main import query
 
 def on_button_click(main_window, button_name):
     if button_name == "Thoát":
@@ -10,8 +11,8 @@ def on_button_click(main_window, button_name):
         main_window.withdraw()  # Ẩn giao diện chính
 
         # Trì hoãn import query để tránh vòng lặp
-        import query
-        query.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
+        # import query
+        query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
 
     elif button_name == "Import":
         main_window.withdraw()  # Ẩn giao diện chính
