@@ -11,7 +11,7 @@ args = parser.parse_args()
 
 # Cấu hình Spark
 conf = SparkConf() \
-    .setAppName("MapReduce") \
+    .setAppName("Search") \
     .setMaster("spark://spark-master:7077") \
     .set("spark.executor.heartbeatInterval", "100s") \
     .set("spark.network.timeout", "600s") \
@@ -33,8 +33,14 @@ df = spark.read \
 # Filter the DataFrame based on the search criteria
 filtered_df = df.filter(df[column_names] == search_label)
 
-# Show the filtered results
-filtered_df.show()
+# Thu thập kết quả sau khi lọc
+results = filtered_df.collect()
+
+# In kết quả với tên cột và giá trị trên cùng một dòng
+for row in results:
+    row_dict = row.asDict()  # Chuyển đổi hàng thành từ điển
+    row_output = ", ".join([f"{col_name}: {row_dict[col_name]}" for col_name in row_dict])  # Kết hợp thành chuỗi
+    print(row_output)
 
 # Đóng Spark session
 spark.stop()
