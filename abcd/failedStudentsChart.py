@@ -46,7 +46,7 @@ def draw_chart():
     # print(df_pivot)
 
     # Vẽ biểu đồ cột
-    ax = processed_dataframe.plot(kind='bar', figsize=(10, 6), width=0.8)
+    ax = processed_dataframe.plot(kind='bar', figsize=(10, 6), width=0.5)
 
     # Đặt tiêu đề và nhãn trục
     ax.set_title('Tỷ lệ trượt môn theo khoa và kỳ', fontsize=14)
