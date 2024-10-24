@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 from tkinter import ttk
 from cassandra.cluster import Cluster  # Cassandra driver for Python
@@ -69,6 +70,10 @@ def query(home_callback=None):
     right_frame = tk.Frame(paned_window)
     paned_window.add(right_frame)
 
+    # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
+    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
+    paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
+
     # Tạo Frame chứa Combobox và Button
     query_frame = tk.Frame(right_frame)
     query_frame.pack(fill=tk.X, padx=10, pady=10)
@@ -120,7 +125,7 @@ def query(home_callback=None):
         keyspace_exists = False
 
     def create_CSDL():
-        global keyspace_exists,session
+        global keyspace_exists,session, loading_label
         if not keyspace_exists:
             try:
                 cluster = Cluster(['127.0.0.1'])
@@ -143,7 +148,8 @@ def query(home_callback=None):
                 keyspace_exists = True
                 # Kết nối lại với keyspace đã tạo
                 session = cluster.connect('nhom12')
-                import_cmd.run_spark_job()
+                # Tạo và khởi động luồng
+                threading.Thread(target=import_cmd.run_spark_job()).start()
 
             except Exception as e:
                 print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
@@ -156,9 +162,11 @@ def query(home_callback=None):
     global selected_table
     selected_table = ""  # Get the selected table
 
+    global loading_label
+
     def search():
         global column_names  # Khai báo column_names là toàn cục
-        global selected_table
+        global selected_table, loading_label
         search_label = search_input.get()
         search_select = search_combobox.get()
 
@@ -175,7 +183,40 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                create_table_search(search_label)
+                loading_label = show_loading()
+
+                def create_table_search(search_label):
+                    data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
+
+                    # Xóa Treeview cũ nếu có
+                    for widget in right_frame.winfo_children():
+                        if isinstance(widget, ttk.Treeview):
+                            widget.destroy()
+                        if isinstance(widget, ttk.Scrollbar):
+                            widget.destroy()
+
+                    # Tạo Treeview với tên cột
+                    tree = ttk.Treeview(right_frame, columns=column_names, show='headings')
+                    tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+                    # Tạo Scrollbar
+                    scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
+                    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+                    # Liên kết scrollbar với treeview
+                    tree.configure(yscrollcommand=scrollbar.set)
+
+                    for col in column_names:
+                        tree.heading(col, text=col, anchor=tk.CENTER)
+                        tree.column(col, width=50, anchor=tk.CENTER)
+
+                    # Chèn dữ liệu vào Treeview
+                    for row in data:
+                        columns = [pair.split(": ")[1] for pair in row.split(", ")]
+                        tree.insert('', tk.END, values=columns)
+                        
+                # Tạo và khởi động luồng
+                threading.Thread(target=create_table_search(search_label)).start()
         else:
             select_query()
         
@@ -208,36 +249,6 @@ def query(home_callback=None):
 
         # Tạo form nhập dữ liệu động dựa trên các cột của bảng
         create_dynamic_inputs(column_names)
-
-    def create_table_search(search_label):
-        data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
-
-        # Xóa Treeview cũ nếu có
-        for widget in right_frame.winfo_children():
-            if isinstance(widget, ttk.Treeview):
-                widget.destroy()
-            if isinstance(widget, ttk.Scrollbar):
-                widget.destroy()
-
-        # Tạo Treeview với tên cột
-        tree = ttk.Treeview(right_frame, columns=column_names, show='headings')
-        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-        # Tạo Scrollbar
-        scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # Liên kết scrollbar với treeview
-        tree.configure(yscrollcommand=scrollbar.set)
-
-        for col in column_names:
-            tree.heading(col, text=col, anchor=tk.CENTER)
-            tree.column(col, width=50, anchor=tk.CENTER)
-
-        # Chèn dữ liệu vào Treeview
-        for row in data:
-            columns = [pair.split(": ")[1] for pair in row.split(", ")]
-            tree.insert('', tk.END, values=columns)
 
     # Tạo Treeview hiển thị dữ liệu
     def create_table(column_names, data):
@@ -399,8 +410,8 @@ def query(home_callback=None):
         if home_callback:
             home_callback.deiconify()
 
-    # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
-    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
-    paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
+    def show_loading():
+        # Khóa giao diện tạm thời (nếu cần)
+        root.update_idletasks()
 
     root.mainloop()

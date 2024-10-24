@@ -8,5 +8,7 @@ def run_spark_job():
     
     try:
         subprocess.run(command, shell=True, capture_output=True, text=True, encoding='utf-8')
+
+        # Xóa thông báo "Loading" sau khi hoàn thành
     except Exception as e:
         return [], [f"Lỗi khi thực thi: {e}"]
