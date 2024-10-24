@@ -181,40 +181,40 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                def create_table_search(search_label):
-                    data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
-
-                    # Xóa Treeview cũ nếu có
-                    for widget in right_frame.winfo_children():
-                        if isinstance(widget, ttk.Treeview):
-                            widget.destroy()
-                        if isinstance(widget, ttk.Scrollbar):
-                            widget.destroy()
-
-                    # Tạo Treeview với tên cột
-                    tree = ttk.Treeview(right_frame, columns=column_names, show='headings')
-                    tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-                    # Tạo Scrollbar
-                    scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
-                    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-                    # Liên kết scrollbar với treeview
-                    tree.configure(yscrollcommand=scrollbar.set)
-
-                    for col in column_names:
-                        tree.heading(col, text=col, anchor=tk.CENTER)
-                        tree.column(col, width=50, anchor=tk.CENTER)
-
-                    # Chèn dữ liệu vào Treeview
-                    for row in data:
-                        columns = [pair.split(": ")[1] for pair in row.split(", ")]
-                        tree.insert('', tk.END, values=columns)
-
                 # Tạo và khởi động luồng
                 threading.Thread(target=create_table_search(search_label)).start()
         else:
             select_query()
+
+    def create_table_search(search_label):
+        data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
+
+        # Xóa Treeview cũ nếu có
+        for widget in right_frame.winfo_children():
+            if isinstance(widget, ttk.Treeview):
+                widget.destroy()
+            if isinstance(widget, ttk.Scrollbar):
+                widget.destroy()
+
+        # Tạo Treeview với tên cột
+        tree = ttk.Treeview(right_frame, columns=column_names, show='headings')
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Tạo Scrollbar
+        scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Liên kết scrollbar với treeview
+        tree.configure(yscrollcommand=scrollbar.set)
+
+        for col in column_names:
+            tree.heading(col, text=col, anchor=tk.CENTER)
+            tree.column(col, width=50, anchor=tk.CENTER)
+
+        # Chèn dữ liệu vào Treeview
+        for row in data:
+            columns = [pair.split(": ")[1] for pair in row.split(", ")]
+            tree.insert('', tk.END, values=columns)
         
     # Hàm chọn bảng và lấy dữ liệu
     def select_query():
