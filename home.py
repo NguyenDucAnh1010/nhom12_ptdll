@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from QueryHome.main import query
+import subprocess
 
 def on_button_click(main_window, button_name):
     if button_name == "Thoát":
