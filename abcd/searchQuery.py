@@ -9,7 +9,7 @@ def run_spark_job(selected_table=None, column_names=None,search_label=None):
 
     try:
         # Chạy lệnh docker exec và thu thập stdout
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, encoding='utf-8')
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
         # Lọc bỏ các dòng không phải kết quả 
         # Tách các dòng dựa trên dấu phẩy hoặc khoảng trắng, sau đó lọc ra các dòng chứa ID sinh viên
         output_lines = result.stdout.split("\n")
