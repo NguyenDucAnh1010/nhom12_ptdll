@@ -4,7 +4,7 @@ import subprocess
 # Hàm thực thi lệnh spark-submit bên trong container Docker và chỉ lấy kết quả
 def run_spark_job(selected_table=None, column_names=None,search_label=None):
     # Chạy lệnh spark-submit với truy vấn SQL được chọn
-    command = f"docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 /opt/shared/SearchQuery.py --selected_table {selected_table} --column_names {column_names} --search_label {search_label}\""
+    command = f"docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 /opt/shared/SearchQuery.py --selected_table {selected_table} --search_label {search_label}\""
     # spark-submit --master spark://spark-master:7077 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 /opt/shared/SearchQuery.py --selected_table department --search_label KT
     
     try:
