@@ -125,7 +125,7 @@ def query(home_callback=None):
         keyspace_exists = False
 
     def create_CSDL():
-        global keyspace_exists,session, loading_label
+        global keyspace_exists,session, loading_window
         if not keyspace_exists:
             try:
                 cluster = Cluster(['127.0.0.1'])
@@ -162,11 +162,11 @@ def query(home_callback=None):
     global selected_table
     selected_table = ""  # Get the selected table
 
-    global loading_label
+    global loading_window
 
     def search():
         global column_names  # Khai báo column_names là toàn cục
-        global selected_table, loading_label
+        global selected_table, loading_window
         search_label = search_input.get()
         search_select = search_combobox.get()
 
@@ -183,7 +183,7 @@ def query(home_callback=None):
                 # Create table with the fetched data
                 create_table(column_names, data)
             elif search_select == "Spark":
-                loading_label = show_loading()
+                loading_window = show_loading_window()
 
                 def create_table_search(search_label):
                     data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
@@ -214,7 +214,9 @@ def query(home_callback=None):
                     for row in data:
                         columns = [pair.split(": ")[1] for pair in row.split(", ")]
                         tree.insert('', tk.END, values=columns)
-                        
+
+                    loading_window.destroy()
+
                 # Tạo và khởi động luồng
                 threading.Thread(target=create_table_search(search_label)).start()
         else:
@@ -410,8 +412,20 @@ def query(home_callback=None):
         if home_callback:
             home_callback.deiconify()
 
-    def show_loading():
-        # Khóa giao diện tạm thời (nếu cần)
-        root.update_idletasks()
+    def show_loading_window():
+        # Tạo một cửa sổ mới cho Loading
+        loading_window = tk.Toplevel(root)
+        loading_window.title("Loading")
+        loading_window.geometry("200x100")  # Kích thước cửa sổ loading
+
+        # Tạo thông báo Loading
+        loading_window = tk.Label(loading_window, text="Loading...", font=("Arial", 16))
+        loading_window.pack(pady=20)
+
+        # Vô hiệu hóa tương tác với cửa sổ chính
+        loading_window.transient(root)
+        loading_window.grab_set()  # Khóa giao diện chính
+
+        return loading_window
 
     root.mainloop()
