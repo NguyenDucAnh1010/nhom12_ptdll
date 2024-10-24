@@ -123,6 +123,7 @@ def query(home_callback=None):
         global keyspace_exists,session
         if not keyspace_exists:
             try:
+                cluster = Cluster(['127.0.0.1'])
                 session = cluster.connect()  # Kết nối mà không chỉ định keyspace
                 # Đọc nội dung tệp table.cql và thực thi
                 # Đọc tệp và thực hiện từng câu lệnh một
@@ -187,6 +188,7 @@ def query(home_callback=None):
 
         if not keyspace_exists:
             try:
+                cluster = Cluster(['127.0.0.1'])
                 session = cluster.connect('nhom12')  # Thay 'your_keyspace' bằng tên keyspace của bạn
             except Exception as e:
                 messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
