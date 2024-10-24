@@ -28,7 +28,8 @@ search_label = args.search_label
 # Load the Cassandra table into a DataFrame
 df = spark.read \
     .format("org.apache.spark.sql.cassandra") \
-    .load(selected_table)
+    .options(table=selected_table, keyspace='nhom12') \
+    .load()
 
 # Filter the DataFrame based on the search criteria
 filtered_df = df.filter(df[column_names] == search_label)

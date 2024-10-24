@@ -218,11 +218,12 @@ def query(home_callback=None):
                 create_table(column_names, data)
             elif search_select == "Spark":
                 # Tạo và khởi động luồng
-                threading.Thread(target=create_table_search(search_label)).start()
+                create_table_search(search_label)
         else:
             select_query()
 
     def create_table_search(search_label):
+        global selected_table,column_names
         data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
 
         # Xóa Treeview cũ nếu có
