@@ -8,6 +8,7 @@ class UIManager:
         self.root = root
         self.root.title("Ứng dụng Spark vào Cassandra")
         self.root.geometry("800x600")
+        self.queries = queries
         self.home_callback = home_callback
 
         # Tạo biến chuỗi cho các Combobox
@@ -59,14 +60,14 @@ class UIManager:
                 self.department_frame.pack(fill=tk.X, padx=10, pady=0)
 
                 # Tạo Combobox để hiển thị tên khoa
-                department_combobox = ttk.Combobox(self.department_frame, textvariable=self.selected_department, values=list(self.dictionary_department.values()))
-                department_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
+                self.department_combobox = ttk.Combobox(self.department_frame, textvariable=self.selected_department, values=list(self.dictionary_department.values()))
+                self.department_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
 
                 # Tạo Combobox để hiển thị tên lớp
                 self.class_combobox = ttk.Combobox(self.department_frame, textvariable=self.selected_class)
                 self.class_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
                 # Gọi hàm cập nhật danh sách lớp khi chọn khoa
-                department_combobox.bind("<<ComboboxSelected>>", self.update_class_combobox)
+                self.department_combobox.bind("<<ComboboxSelected>>", self.update_class_combobox)
         # Nếu không phải giá trị này, xóa frame chứa 2 combobox (nếu có)
         else:
             if self.department_frame is not None:
@@ -112,7 +113,12 @@ class UIManager:
         # Nếu tìm được truy vấn, gọi lớp QueryExecutor để xử lý
         if query_key:
             query_executor = QueryExecutor(self.queries)
-            result = query_executor.execute_query(query_key)  # Gọi phương thức từ lớp QueryExecutor
+
+            department = self.selected_department.get()  # Lấy giá trị khoa từ Combobox
+            class_name = self.selected_class.get()  # Lấy giá trị lớp từ Combobox
+            result = query_executor.execute_query(query_key, department, class_name)  # Gọi phương thức từ lớp QueryExecutor
+            # Nếu có nhiều tham số hơn thì chỉ cần truyền tham số vào thêm là được (như dưới)
+            # result = query_executor.execute_query(query_key, department, class_name, semester, student_id)
 
             if result:
                 # Giả sử `result` trả về là tuple (tiêu đề cột, dữ liệu)
@@ -123,10 +129,11 @@ class UIManager:
 
                 for col in title_column:
                     tree.heading(col, text=col)
-                    tree.column(col, width=100)
-
+                    tree.column(col, width=80)
+                
                 for row in data:
-                    tree.insert('', tk.END, values=row)
+                    columns = [pair.split(": ")[1] for pair in row.split(", ")]
+                    tree.insert('', tk.END, values=columns)
 
                 # Hiển thị Treeview
                 tree.pack(fill=tk.BOTH, expand=True)
