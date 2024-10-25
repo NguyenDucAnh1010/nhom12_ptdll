@@ -25,7 +25,7 @@ def query(home_callback=None):
 
     # Tạo PanedWindow chia 2 bên
     paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
-    paned_window.pack(fill=tk.BOTH, expand=True,padx=50, pady=50)
+    paned_window.pack(fill=tk.BOTH, expand=True,padx=30, pady=30)
 
     # Tạo frame bên trái cho phần nhập dữ liệu
     left_frame = tk.Frame(paned_window)
@@ -75,7 +75,7 @@ def query(home_callback=None):
     paned_window.add(right_frame)
 
     # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
-    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
+    paned_window.paneconfig(left_frame, minsize=500)  # Đặt kích thước tối thiểu bên trái
     paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
 
     # Tạo Frame chứa Combobox và Button
