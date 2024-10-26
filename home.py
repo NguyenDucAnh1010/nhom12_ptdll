@@ -32,6 +32,7 @@ def run_spark_job():
         return [], [f"Lỗi khi thực thi: {e}"]
 
 def home():
+    # run_spark_job()
     main_window = tk.Tk()
     main_window.title("Chương trình ứng dụng Spark vào Cassandra")
     main_window.geometry("800x600")

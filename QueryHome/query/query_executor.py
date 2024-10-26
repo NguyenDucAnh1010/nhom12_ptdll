@@ -1,6 +1,8 @@
 import abcd.failedStudents as failedStudents
 import abcd.scholarship as scholarship
 import abcd.classifyStudents as classifyStudents
+import abcd.top10 as top10
+import abcd.sumStudentPass as sumStudentPass
 
 class QueryExecutor:
     def __init__(self, queries):
@@ -8,8 +10,9 @@ class QueryExecutor:
         self.query_functions = {
             "querie9": failedStudents.failed_students,  # Ánh xạ truy vấn tới hàm xử lý tương ứng
             "querie6": scholarship.scholarship_students  ,
-            "querie5": classifyStudents.classify_students  
-    
+            "querie5": classifyStudents.classify_students  ,
+            "querie3": top10.run_spark_job,
+            "querie4": sumStudentPass.run_spark_job
         }
 
     def execute_query(self, query_key, *args):

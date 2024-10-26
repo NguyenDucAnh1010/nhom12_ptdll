@@ -10,6 +10,8 @@ def query(home_callback=None):
         "querie1": "tính điểm trung bình môn theo từng môn",
         "querie5": "Phân loại sinh viên dựa vào điểm trung bình theo từng môn",
         "querie6": "Danh sách học bổng (điểm >4 và số tín >12)",
+        "querie3": "Top 10 sinh viên có điểm cao nhất theo từng môn",
+        "querie4": "Tổng số môn sinh viên đã qua theo từng kỳ",
         "querie9": "thống kê số sinh viên trượt môn (< 4)"
     }
 
@@ -63,6 +65,7 @@ def query(home_callback=None):
                 "Vi dieu khien", "Nguyen ly kinh te vi mo", "Quan tri hoc", "Ke toan may", 
                 "Ky thuat khuon dap", "Tri tue nhan tao", "Ke toan chi phi", "Co hoc", 
                 "Mang may tinh"]
+
 
     query_executor = QueryExecutor(queries)
     chart_handler = ChartHandler()
