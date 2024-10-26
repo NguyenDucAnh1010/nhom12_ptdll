@@ -48,8 +48,7 @@ student_gpa_df.cache()
 result = student_gpa_df.collect()
 for row in result:
     print(row)# result.show()
-# student_gpa_df.write.csv("\opt\shared\dataset\gpa_for_class")
-# Nếu bạn muốn lưu kết quả lại vào Cassandra
+# student_gpa_df.write.mode("overwrite").parquet("\opt\shared\dataset\gpa_for_class.parquet")
 # student_gpa_df.write \
 #     .format("org.apache.spark.sql.cassandra") \
 #     .mode("append") \
