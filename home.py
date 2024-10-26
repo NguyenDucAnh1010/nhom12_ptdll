@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
+from QueryHome.main import query
+import subprocess
 
 def on_button_click(main_window, button_name):
     if button_name == "Thoát":
@@ -10,8 +12,8 @@ def on_button_click(main_window, button_name):
         main_window.withdraw()  # Ẩn giao diện chính
 
         # Trì hoãn import query để tránh vòng lặp
-        import query
-        query.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
+        # import query
+        query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
 
     elif button_name == "Import":
         main_window.withdraw()  # Ẩn giao diện chính
@@ -19,6 +21,15 @@ def on_button_click(main_window, button_name):
         # Trì hoãn import query để tránh vòng lặp
         import import_data
         import_data.query(home_callback=main_window)  # Gọi lại home khi thoát khỏi query
+
+# Hàm thực thi lệnh spark-submit bên trong container Docker và chỉ lấy kết quả
+def run_spark_job():
+    command = "docker cp ./shared/ spark-master:/opt/"
+    
+    try:
+        subprocess.run(command, shell=True, capture_output=True, text=True)
+    except Exception as e:
+        return [], [f"Lỗi khi thực thi: {e}"]
 
 def home():
     main_window = tk.Tk()

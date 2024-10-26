@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import abcd.failedStudents as failedStudents
 import abcd.failedStudentsChart as failedStudentsChart
-import gpa_avg_of_student as gpa_avg_of_student
+import abcd.gpa_avg_of_student as gpa_avg_of_student
 
 def query(home_callback=None):
     # Tạo giao diện tkinter

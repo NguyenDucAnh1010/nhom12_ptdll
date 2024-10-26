@@ -25,14 +25,14 @@ def query(home_callback=None):
 
     # Tạo PanedWindow chia 2 bên
     paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
-    paned_window.pack(fill=tk.BOTH, expand=True,padx=50, pady=50)
+    paned_window.pack(fill=tk.BOTH, expand=True,padx=30, pady=30)
 
     # Tạo frame bên trái cho phần nhập dữ liệu
-    left_frame = tk.Frame(paned_window, bg='lightgray')
+    left_frame = tk.Frame(paned_window)
     paned_window.add(left_frame)
 
     # Tạo Frame cho hàng đầu tiên gồm nút Thoát và Label
-    top_left_frame = tk.Frame(left_frame, bg='lightgray')
+    top_left_frame = tk.Frame(left_frame)
     top_left_frame.pack(fill=tk.X, padx=10, pady=10)
 
     # Nút Thoát nằm bên trái Label
@@ -40,22 +40,26 @@ def query(home_callback=None):
     exit_button.pack(side=tk.LEFT, padx=5)
 
     # Label nằm sau nút Thoát, lùi xuống với padding
-    tk.Label(top_left_frame, text="Nhập dữ liệu vào bảng:", bg='lightgray', font=("Arial", 14)).pack(side=tk.LEFT, padx=10, pady=10)
+    tk.Label(top_left_frame, text="Nhập dữ liệu vào bảng:", font=("Arial", 14)).pack(side=tk.LEFT, padx=10, pady=10)
 
     # Frame cho các Label và Entry động sẽ được sinh sau khi chọn bảng
-    CSDL_button_frame = tk.Frame(left_frame, bg='lightgray')
+    CSDL_button_frame = tk.Frame(left_frame)
     CSDL_button_frame.pack(fill=tk.X, padx=10, pady=10)  # Lùi form xuống với pady=10
 
     # Nút thêm dữ liệu nằm trong frame mới
+    delete_CSDL_button = tk.Button(CSDL_button_frame, text="Xoá CSDL", font=("Arial", 14), command=lambda: delete_CSDL())
+    delete_CSDL_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    # Nút thêm dữ liệu nằm trong frame mới
     CSDL_button = tk.Button(CSDL_button_frame, text="Tạo CSDL tự động", font=("Arial", 14), command=lambda: create_CSDL())
-    CSDL_button.pack(side=tk.BOTTOM, padx=5, pady=5)
+    CSDL_button.pack(side=tk.LEFT, padx=5, pady=5)
 
     # Frame cho các Label và Entry động sẽ được sinh sau khi chọn bảng
-    dynamic_input_frame = tk.Frame(left_frame, bg='lightgray')
+    dynamic_input_frame = tk.Frame(left_frame)
     dynamic_input_frame.pack(fill=tk.X, padx=10, pady=10)  # Lùi form xuống với pady=10
 
     # Tạo một frame mới cho các nút thêm và xóa
-    buttons_frame = tk.Frame(left_frame, bg='lightgray')
+    buttons_frame = tk.Frame(left_frame)
     buttons_frame.pack(padx=10, pady=10)
 
     # Nút thêm dữ liệu nằm trong frame mới
@@ -71,7 +75,7 @@ def query(home_callback=None):
     paned_window.add(right_frame)
 
     # Điều chỉnh chia 2 bên theo tỷ lệ 50:50
-    paned_window.paneconfig(left_frame, minsize=700)  # Đặt kích thước tối thiểu bên trái
+    paned_window.paneconfig(left_frame, minsize=500)  # Đặt kích thước tối thiểu bên trái
     paned_window.paneconfig(right_frame, minsize=700)  # Đặt kích thước tối thiểu bên phải
 
     # Tạo Frame chứa Combobox và Button
@@ -124,6 +128,19 @@ def query(home_callback=None):
         messagebox.showinfo("Thông báo", f"Bạn chưa tạo cơ sở dữ liệu.\nVui lòng ấn vào nút tạo CSDL tự dộng!")
         keyspace_exists = False
 
+    def delete_CSDL():
+        global keyspace_exists,session
+        if keyspace_exists:
+            try:
+                cluster = Cluster(['127.0.0.1'])
+                session = cluster.connect()  # Kết nối mà không chỉ định keyspace
+                session.execute("DROP KEYSPACE nhom12;")
+                messagebox.showinfo("Thông báo", f"Đã xoá CSDL thành công!")
+                keyspace_exists = False
+
+            except Exception as e:
+                messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")             
+
     def create_CSDL():
         global keyspace_exists,session
         if not keyspace_exists:
@@ -152,7 +169,6 @@ def query(home_callback=None):
                 threading.Thread(target=import_cmd.run_spark_job()).start()
 
             except Exception as e:
-                print(f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
                 messagebox.showinfo("Thông báo", f"Đã xảy ra lỗi khi chạy tệp CQL:\n{e}")
                 keyspace_exists = False
 
@@ -182,11 +198,12 @@ def query(home_callback=None):
                 create_table(column_names, data)
             elif search_select == "Spark":
                 # Tạo và khởi động luồng
-                threading.Thread(target=create_table_search(search_label)).start()
+                create_table_search(search_label)
         else:
             select_query()
 
     def create_table_search(search_label):
+        global selected_table,column_names
         data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
 
         # Xóa Treeview cũ nếu có
@@ -285,7 +302,7 @@ def query(home_callback=None):
 
         # Sử dụng grid() để căn chỉnh các Label và Entry thành hàng với nhau
         for index, col in enumerate(column_names):
-            input_label = tk.Label(dynamic_input_frame, text=col + ":", bg='lightgray', font=("Arial", 14))
+            input_label = tk.Label(dynamic_input_frame, text=col + ":", font=("Arial", 14))
             input_label.grid(row=index, column=0, padx=5, pady=5, sticky=tk.W)
 
             input_entry = tk.Entry(dynamic_input_frame, font=("Arial", 14))
