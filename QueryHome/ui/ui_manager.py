@@ -4,7 +4,7 @@ from QueryHome.query.query_executor import QueryExecutor
 from QueryHome.chart.chart_handler import ChartHandler
 
 class UIManager:
-    def __init__(self, root, queries, dictionary_department, cse_classes, kt_classes, ck_classes, home_callback=None):
+    def __init__(self, root, queries, dictionary_department, cse_classes, kt_classes, ck_classes, subjects, term, home_callback=None):
         self.root = root
         self.root.title("Ứng dụng Spark vào Cassandra")
         self.root.geometry("800x600")
@@ -16,6 +16,11 @@ class UIManager:
         self.selected_department = tk.StringVar(root)
         self.selected_class = tk.StringVar(root)
         self.dictionary_department = dictionary_department  
+
+        self.subjects = subjects  
+        self.selected_subject = tk.StringVar(root)
+        self.term = term 
+        self.selected_term = tk.StringVar(root) 
 
         # Các từ điển lớp
         self.cse_classes = cse_classes
@@ -47,9 +52,25 @@ class UIManager:
         chart_button.pack(side=tk.LEFT, padx=5)
 
         self.department_frame = None  # Placeholder for department combobox frame
+        self.subject_frame = None # mai
+        self.term_frame = None #mai
 
         #Bat su kien khi hien thi cac combobox khoa va lop
         self.selected_query.trace("w", self.show_department_class_combobox)
+    # def remove_combox(self):
+    #     if self.department_frame is not None:
+    #         self.department_frame.destroy()
+    #         self.department_frame = None  # Reset lại frame
+    #         self.selected_department.set("")
+    #         self.selected_class.set("")
+    #     if self.subject_frame is not None:
+    #         self.subject_frame.destroy()
+    #         self.subject_frame = None  # Reset lại frame
+    #         self.selected_subject.set("")
+    #     if self.term_frame is not None:
+    #         self.term_frame.destroy()
+    #         self.term_frame = None  # Reset lại frame
+    #         self.selected_term.set("")
 
     def show_department_class_combobox(self, *args):
         for widget in self.root.winfo_children():
@@ -71,6 +92,24 @@ class UIManager:
                 self.class_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
                 # Gọi hàm cập nhật danh sách lớp khi chọn khoa
                 self.department_combobox.bind("<<ComboboxSelected>>", self.update_class_combobox)
+
+        elif self.selected_query.get() == "Top 10 sinh viên có điểm cao nhất theo từng môn":
+            if self.subject_frame is None:  # Kiểm tra nếu frame chưa được tạo
+                self.subject_frame = tk.Frame(self.root)
+                self.subject_frame.pack(fill=tk.X, padx=10, pady=0)
+
+                # Tạo Combobox để hiển thị tên môn
+                self.subject_combobox = ttk.Combobox(self.subject_frame, textvariable=self.selected_subject, values=self.subjects)
+                self.subject_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
+
+        elif self.selected_query.get() == "Tổng số môn sinh viên đã qua theo từng kỳ":
+            if self.term_frame is None:  # Kiểm tra nếu frame chưa được tạo
+                self.term_frame = tk.Frame(self.root)
+                self.term_frame.pack(fill=tk.X, padx=10, pady=0)
+
+                 # Tạo Combobox để hiển thị tên ky
+                self.term_combobox = ttk.Combobox(self.term_frame, textvariable=self.selected_term, values=self.term)
+                self.term_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
         
         else:
             if self.department_frame is not None:
@@ -78,6 +117,14 @@ class UIManager:
                 self.department_frame = None  # Reset lại frame
                 self.selected_department.set("")
                 self.selected_class.set("")
+            if self.subject_frame is not None:
+                self.subject_frame.destroy()
+                self.subject_frame = None  # Reset lại frame
+                self.selected_subject.set("")
+            if self.term_frame is not None:
+                self.term_frame.destroy()
+                self.term_frame = None  # Reset lại frame
+                self.selected_term.set("")
 
 
     def update_class_combobox(self, event):
@@ -120,12 +167,22 @@ class UIManager:
         if query_key:
             query_executor = QueryExecutor(self.queries)
 
-            department = self.selected_department.get()  # Lấy giá trị khoa từ Combobox
-            class_name = self.selected_class.get()  # Lấy giá trị lớp từ Combobox
-            result = query_executor.execute_query(query_key, department, class_name)  # Gọi phương thức từ lớp QueryExecutor
-            # Nếu có nhiều tham số hơn thì chỉ cần truyền tham số vào thêm là được (như dưới)
-            # result = query_executor.execute_query(query_key, department, class_name, semester, student_id)
+            if query_key == "querie9":  # Truy vấn "thống kê số sinh viên trượt môn (< 4)"
+                department = self.selected_department.get()
+                class_name = self.selected_class.get()
+                result = query_executor.execute_query(query_key, department, class_name)
 
+            elif query_key == "querie3":  # Truy vấn "Top 10 sinh viên có điểm cao nhất theo từng môn"
+                subject_name = self.selected_subject.get()
+                result = query_executor.execute_query(query_key, subject_name)
+            
+            elif query_key == "querie4":
+                try:
+                    term_name = int(self.selected_term.get())  # Chuyển term về kiểu int
+                    result = query_executor.execute_query(query_key, term_name)
+                except ValueError:
+                    messagebox.showerror("Lỗi", "Vui lòng chọn một kỳ hợp lệ")
+                    return
             if result:
                 # Giả sử `result` trả về là tuple (tiêu đề cột, dữ liệu)
                 title_column, data = result
