@@ -1,10 +1,15 @@
 import abcd.failedStudents as failedStudents
+import abcd.scholarship as scholarship
+import abcd.classifyStudents as classifyStudents
 
 class QueryExecutor:
     def __init__(self, queries):
         self.queries = queries
         self.query_functions = {
-            "querie9": failedStudents.failed_students  # Ánh xạ truy vấn tới hàm xử lý tương ứng
+            "querie9": failedStudents.failed_students,  # Ánh xạ truy vấn tới hàm xử lý tương ứng
+            "querie6": scholarship.scholarship_students  ,
+            "querie5": classifyStudents.classify_students  
+    
         }
 
     def execute_query(self, query_key, *args):

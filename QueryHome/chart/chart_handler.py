@@ -1,10 +1,13 @@
 import abcd.failedStudentsChart as failedStudentsChart
-
+import abcd.scholarship as scholarship
+import abcd.classifyStudents as classifyStudents
 class ChartHandler:
     def __init__(self):
         # Từ điển ánh xạ giữa truy vấn và hàm vẽ biểu đồ
         self.query_chart_functions = {
-            "querie9": failedStudentsChart.draw_chart  # Ví dụ ánh xạ truy vấn tới hàm vẽ biểu đồ
+            "querie9": failedStudentsChart.draw_chart , # Ví dụ ánh xạ truy vấn tới hàm vẽ biểu đồ
+            "querie6": scholarship.scholarship_students,  
+            "querie5": classifyStudents.classify_students
         }
 
     def display_chart(self, query_key, *args):
