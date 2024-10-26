@@ -21,7 +21,7 @@ spark = SparkSession.builder.config(conf=conf).getOrCreate()
 # Thiết lập mức log thành "ERROR" để chỉ hiển thị lỗi nghiêm trọng
 spark.sparkContext.setLogLevel("OFF")
 
-# Đọc dữ liệu từ các bảng trong Cassandra
+## Đọc dữ liệu từ các bảng trong Cassandra
 grades_df = spark.read \
     .format("org.apache.spark.sql.cassandra") \
     .options(table="grade", keyspace="nhom12") \
@@ -54,23 +54,26 @@ result_df = grades_df.alias("g") \
     .join(departments_df.alias("d"), "iddepartment") \
     .join(subjects_df.alias("sub"), "idsubject")
 
-# Áp dụng điều kiện lọc dựa trên giá trị của name_class
+## Lưu DataFrame vào thư mục shared dưới dạng Parquet để sử dụng lại
+result_df.write.mode("overwrite").parquet("/opt/shared/failed_students_data.parquet")
+
+#Doc ket qua da luu
+#result_df = spark.read.parquet("/opt/shared/failed_students_data.parquet")
+
+
+## Áp dụng điều kiện lọc dựa trên giá trị của name_class và name_department
 if name_class:
-    result_df = result_df.filter((departments_df["namedepartment"] == name_department) & (classes_df["nameclass"] == name_class))
+    result_df = result_df.filter((result_df["namedepartment"] == name_department) & (result_df["nameclass"] == name_class))
 else:
-    result_df = result_df.filter(departments_df["namedepartment"] == name_department)
+    result_df = result_df.filter(result_df["namedepartment"] == name_department)
 
-# Chọn các cột cần thiết
-result_df = result_df.select("d.namedepartment", "sub.namesubject", "c.nameclass", "g.term", "s.idstudent", "s.namestudent", "g.grade")
-
-# Cache lại kết quả sau khi join
-result_df.cache()
+result_df = result_df.select("namedepartment", "namesubject", "nameclass", "term", "idstudent", "namestudent", "grade")
 
 # Lọc các sinh viên có điểm nhỏ hơn 4
 result_below_4_df = result_df.filter(result_df["grade"] < 4)
 
-# Cache lại kết quả sau khi loc ra diem < 4
-result_below_4_df.cache()
+## Lưu DataFrame vào thư mục shared dưới dạng Parquet để sử dụng lại
+result_below_4_df.write.mode("overwrite").parquet("/opt/shared/failed_students.parquet")
 
 # Thu thập và hiển thị kết quả
 result = result_below_4_df.collect()
@@ -80,4 +83,4 @@ for row in result:
     print(f"Khoa: {row['namedepartment']}, Lớp: {row['nameclass']}, Môn: {row['namesubject']}, Kỳ: {row['term']}, Mã sinh viên: {row['idstudent']}, Tên sinh viên: {row['namestudent']}, Điểm: {diem}")
 
 # Đóng Spark session
-#spark.stop()
+spark.stop()

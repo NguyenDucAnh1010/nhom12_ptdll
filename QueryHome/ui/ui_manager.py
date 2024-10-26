@@ -153,7 +153,9 @@ class UIManager:
         if query_key:
             # Gọi lớp ChartHandler để hiển thị biểu đồ
             chart_handler = ChartHandler()
-            chart_handler.display_chart(query_key)  # Gọi phương thức từ lớp ChartHandler để vẽ biểu đồ
+            department = self.selected_department.get()  # Lấy giá trị khoa từ Combobox
+            class_name = self.selected_class.get()  # Lấy giá trị lớp từ Combobox
+            chart_handler.display_chart(query_key, department, class_name)  # Gọi phương thức từ lớp ChartHandler để vẽ biểu đồ
         else:
             messagebox.showerror("Lỗi", "Truy vấn không hợp lệ để vẽ biểu đồ.")
 
