@@ -55,7 +55,7 @@ result_df = grades_df.alias("g") \
     .join(subjects_df.alias("sub"), "idsubject")
 
 ## Lưu DataFrame vào thư mục shared dưới dạng Parquet để sử dụng lại
-result_df.write.mode("overwrite").parquet("/opt/shared/failed_students_data.parquet")
+# result_df.write.mode("overwrite").parquet("/opt/shared/failed_students_data.parquet")
 
 #Doc ket qua da luu
 #result_df = spark.read.parquet("/opt/shared/failed_students_data.parquet")
@@ -73,7 +73,7 @@ result_df = result_df.select("namedepartment", "namesubject", "nameclass", "term
 result_below_4_df = result_df.filter(result_df["grade"] < 4)
 
 ## Lưu DataFrame vào thư mục shared dưới dạng Parquet để sử dụng lại
-result_below_4_df.write.mode("overwrite").parquet("/opt/shared/failed_students.parquet")
+# result_below_4_df.write.mode("overwrite").parquet("/opt/shared/failed_students.parquet")
 
 # Thu thập và hiển thị kết quả
 result = result_below_4_df.collect()
