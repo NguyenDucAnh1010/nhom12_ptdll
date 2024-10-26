@@ -13,9 +13,7 @@ conf = SparkConf() \
     .setMaster("spark://spark-master:7077") \
     .set("spark.executor.heartbeatInterval", "100s") \
     .set("spark.network.timeout", "600s") \
-    .set("spark.rpc.message.maxSize", "1024") \
-    .set("spark.cassandra.connection.host", "cassandra-container")
-
+    .set("spark.rpc.message.maxSize", "1024")
 # Tạo Spark session
 spark = SparkSession.builder.config(conf=conf).getOrCreate()
 

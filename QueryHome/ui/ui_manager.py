@@ -52,6 +52,9 @@ class UIManager:
         self.selected_query.trace("w", self.show_department_class_combobox)
 
     def show_department_class_combobox(self, *args):
+        for widget in self.root.winfo_children():
+            if isinstance(widget, ttk.Treeview):
+                widget.destroy() 
 
             # Nếu giá trị là "thống kê số sinh viên trượt môn (< 4)" thì hiển thị combobox
         if self.selected_query.get() == "thống kê số sinh viên trượt môn (< 4)":
@@ -68,11 +71,14 @@ class UIManager:
                 self.class_combobox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=2)
                 # Gọi hàm cập nhật danh sách lớp khi chọn khoa
                 self.department_combobox.bind("<<ComboboxSelected>>", self.update_class_combobox)
-        # Nếu không phải giá trị này, xóa frame chứa 2 combobox (nếu có)
+        
         else:
             if self.department_frame is not None:
                 self.department_frame.destroy()
                 self.department_frame = None  # Reset lại frame
+                self.selected_department.set("")
+                self.selected_class.set("")
+
 
     def update_class_combobox(self, event):
         # Lấy mã khoa đã chọn

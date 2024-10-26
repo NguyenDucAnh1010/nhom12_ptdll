@@ -9,10 +9,10 @@ def run_spark_job(*args):
     if len(args) >= 2:
         name_department = args[0]
         name_class = args[1]
-        command = "docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 /opt/shared/FailedStudentsChart.py '{0}' '{1}'\"".format(name_department, name_class)
+        command = "docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 /opt/shared/FailedStudentsChart.py '{0}' '{1}'\"".format(name_department, name_class)
     else:
         name_department = args[0]
-        command = "docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 /opt/shared/FailedStudentsChart.py '{0}' \"".format(name_department)
+        command = "docker exec -it spark-master bash -c \"spark-submit --master spark://spark-master:7077 /opt/shared/FailedStudentsChart.py '{0}' \"".format(name_department)
     
     try:
         # Chạy lệnh docker exec và thu thập stdout
