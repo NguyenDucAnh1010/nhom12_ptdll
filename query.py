@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import abcd.failedStudents as failedStudents
 import abcd.failedStudentsChart as failedStudentsChart
+import abcd.gpa_avg_of_student as gpa_avg_of_student
 
 def query(home_callback=None):
     # Tạo giao diện tkinter
@@ -27,7 +28,7 @@ def query(home_callback=None):
         "querie5": "top N sinh viên với …",
         "querie6": "xóa 1 cột thông tin trong sinhvien",
         "querie7": "thêm cột thông tin trong sv/lop/khoa/diem",
-        "querie8": "tính điểm gpa của từng sinh viên",
+        "querie8": "tính điểm gpa của từng sinh viên theo lớp",
         "querie9": "thống kê số sinh viên trượt môn (< 4)",
         "querie10": "tổng sinh viên theo khoa || lớp",
     }
@@ -56,6 +57,7 @@ def query(home_callback=None):
 
     # Tạo từ điển ánh xạ tên truy vấn với các hàm tương ứng
     query_functions = {
+        "querie8": gpa_avg_of_student.run_spark_job,
         "querie9": failedStudents.run_spark_job
     }
 
@@ -64,8 +66,8 @@ def query(home_callback=None):
         "querie9": failedStudentsChart.draw_chart
     }
 
-    def create_table(query_function):
-        title_column, data = query_function()
+    def create_table(query_function,*args):
+        title_column, data = query_function("CK2")
 
         tree = ttk.Treeview(root, columns=title_column, show='headings')
 
@@ -90,7 +92,7 @@ def query(home_callback=None):
 
         # Tìm khóa của mô tả trong từ điển queries
         query_key = next((key for key, value in queries.items() if value == selected_description), None)
-
+        
         # Gọi hàm tương ứng từ từ điển query_functions
         if query_key in query_functions:
             query_function = query_functions[query_key]
