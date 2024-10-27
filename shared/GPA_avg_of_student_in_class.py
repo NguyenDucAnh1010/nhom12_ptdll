@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark import SparkConf
 from pyspark.sql import functions as F
 import argparse
+from func.table import Table as tb
 
 parser = argparse.ArgumentParser(description='Process some inputs for Spark job.')
 parser.add_argument('--selected_class', required=True, help='Path to the input CSV file')
@@ -19,12 +20,18 @@ conf = SparkConf() \
 spark = SparkSession.builder.config(conf=conf).getOrCreate()
 
 selected_class = args.selected_class
+
+class_df = spark.read \
+            .format("org.apache.spark.sql.cassandra")\
+            .options(table="class", keyspace="nhom12") \
+            .load()\
+            .filter("nameclass='{}'".format(selected_class))
 # Đọc dữ liệu từ bảng student và grade từ Cassandra
 student_df = spark.read \
     .format("org.apache.spark.sql.cassandra") \
     .options(table="student", keyspace="nhom12") \
     .load() \
-    .filter("idclass = '{}'".format(selected_class))
+    .join(class_df,"idclass")
 
 grade_df = spark.read \
     .format("org.apache.spark.sql.cassandra") \
@@ -42,12 +49,17 @@ student_gpa_df = student_df.join(gpa_df, "idstudent") \
     .select("idstudent", "namestudent", "idclass", "gpa")
 
 # Hiển thị kết quả
-student_gpa_df = student_gpa_df.withColumn("gpa", student_gpa_df["gpa"].cast("string"))
+# student_gpa_df = student_gpa_df.withColumn("gpa", round(student_gpa_df["gpa"], 2))
 
 student_gpa_df.cache()
 result = student_gpa_df.collect()
-for row in result:
-    print(row)# result.show()
+schema = student_gpa_df.schema
+
+table = tb.create(result=result,schema=schema)
+for row in table:
+    print(row)
+# for row in result:
+#     print(row)# result.show()
 # student_gpa_df.write.mode("overwrite").parquet("\opt\shared\dataset\gpa_for_class.parquet")
 # student_gpa_df.write \
 #     .format("org.apache.spark.sql.cassandra") \

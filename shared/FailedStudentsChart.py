@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 import sys
-
+from func.table import Table as tb
 # Nhận tham số dòng lệnh (có thể nhận từ tham số truyền vào từ ngoài)
 # term = int(sys.argv[1]) if len(sys.argv) > 1 else None
 name_department = sys.argv[1] if len(sys.argv) > 1 else None
@@ -57,13 +57,13 @@ failed_rate_by_term = failed_students_by_term \
     .withColumn("failed_rate", (failed_students_by_term["count"] / total_students_by_term["count"]) * 100) \
     .select("namedepartment", "nameclass", "term", "failed_rate")
 
-failed_rate_by_term.show()
+# failed_rate_by_term.show()
 # Thu thập và hiển thị kết quả
 result = failed_rate_by_term.collect()
+schema = failed_rate_by_term.schema
 
-for row in result:
-    # diem = str(round(float(row["grade"]), 2))
-    print(f"Khoa: {row['namedepartment']}, Lớp: {row['nameclass']}, Kỳ: {row['term']}, Tỷ lệ trượt môn: {row['failed_rate']}")
-
+table = tb.create(result=result,schema=schema)
+for row in table:
+    print(row)
 # Đóng Spark session
 spark.stop()

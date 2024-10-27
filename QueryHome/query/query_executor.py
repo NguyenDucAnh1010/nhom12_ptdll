@@ -1,18 +1,19 @@
 import abcd.failedStudents as failedStudents
-
+import abcd.gpa_avg_of_student as gpa_avg_of_student
 class QueryExecutor:
     def __init__(self, queries):
         self.queries = queries
         self.query_functions = {
-            "querie9": failedStudents.failed_students  # Ánh xạ truy vấn tới hàm xử lý tương ứng
+            "querie8": gpa_avg_of_student.run_spark_job,
+            "querie9": failedStudents.failed_students,# Ánh xạ truy vấn tới hàm xử lý tương ứng
         }
 
-    def execute_query(self, query_key, *args):
+    def execute_query(self, query_key,*args,**kwargs):
         if query_key in self.query_functions:
             # Gọi hàm tương ứng từ từ điển query_functions với các tham số truyền vào
             query_function = self.query_functions[query_key]
-             # Truyền tham số khoa và lớp vào
-            return query_function(*args)  # Trong trường hợp chi can tham so la khoa
+            # Truyền tham số khoa và lớp vào
+            return query_function(**kwargs)  # Trong trường hợp chi can tham so la khoa
         return None
 
 

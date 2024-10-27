@@ -8,7 +8,8 @@ def query(home_callback=None):
     
     queries = {
         "querie1": "tính điểm trung bình môn theo từng môn",
-        "querie9": "thống kê số sinh viên trượt môn (< 4)"
+        "querie9": "thống kê số sinh viên trượt môn (< 4)",
+        "querie8": "tính điểm trung bình của sinh viên theo từng lớp"
     }
 
         #Từ điển Khoa với mã khoa và tên khoa
