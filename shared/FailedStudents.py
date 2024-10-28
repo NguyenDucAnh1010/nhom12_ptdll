@@ -77,6 +77,7 @@ result_below_4_df = result_df.filter(result_df["grade"] < 4)
 # result_below_4_df.write.mode("overwrite").parquet("/opt/shared/failed_students.parquet")
 
 # Thu thập và hiển thị kết quả
+
 result = result_below_4_df.collect()
 schema = result_below_4_df.schema
 
