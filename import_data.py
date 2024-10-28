@@ -204,7 +204,7 @@ def query(home_callback=None):
 
     def create_table_search(search_label):
         global selected_table,column_names
-        data = searchQuery.run_spark_job(selected_table,column_names[0],search_label)
+        data = searchQuery.run_spark_job(selected_table=selected_table,column_name = column_names[0],search_label = search_label)
 
         # Xóa Treeview cũ nếu có
         for widget in right_frame.winfo_children():
@@ -229,9 +229,9 @@ def query(home_callback=None):
             tree.column(col, width=50, anchor=tk.CENTER)
 
         # Chèn dữ liệu vào Treeview
-        for row in data:
-            columns = [pair.split(": ")[1] for pair in row.split(", ")]
-            tree.insert('', tk.END, values=columns)
+        data_row = data[1:]
+        for row in data_row:
+            tree.insert('', tk.END, values=row)
         
     # Hàm chọn bảng và lấy dữ liệu
     def select_query():
