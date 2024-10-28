@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark import SparkConf
 from pyspark.sql import functions as F
 import sys
+from func.table import Table as tb
 
 # Lấy mã môn học từ tham số dòng lệnh
 if len(sys.argv) != 2:
@@ -60,18 +61,14 @@ joined_with_avg_df = filtered_df \
 classification_df = joined_with_avg_df.withColumn(
     "classification",
     F.when(F.col("grade") >= F.col("average_grade"), "Giỏi")
-     .otherwise("Kém")
+    .otherwise("Kém")
 )
 
 # Hiển thị kết quả cho tất cả sinh viên
 all_students = classification_df.collect()
-
-for student in all_students:
-    diem = str(round(float(student["grade"]), 2))
-    average_grade = str(round(float(student["average_grade"]), 2))
-    print(f"ID sinh viên: {student['idstudent']}, Tên sinh viên: {student['namestudent']}, "
-          f"Mã môn học: {student['idsubject']}, Tên môn học: {student['namesubject']}, "
-          f"Điểm: {diem}, Điểm trung bình: {average_grade}, Phân loại: {student['classification']}")
-
+schema = classification_df.schema
+table = tb.create(result=all_students,schema=schema)
+for row in table:
+    print(row)
 # Đóng Spark session
 spark.stop()

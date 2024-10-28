@@ -7,12 +7,14 @@ def query(home_callback=None):
     root = tk.Tk()
     
     queries = {
-        "querie1": "tính điểm trung bình môn theo từng môn",
-        "querie5": "Phân loại sinh viên dựa vào điểm trung bình theo từng môn",
-        "querie6": "Danh sách học bổng (điểm >4 và số tín >12)",
+        "querie1": "Danh sách học bổng (điểm >4 và số tín >12)",
+        "querie2": "Phân loại sinh viên dựa vào điểm trung bình theo từng môn",
         "querie3": "Top 10 sinh viên có điểm cao nhất theo từng môn",
         "querie4": "Tổng số môn sinh viên đã qua theo từng kỳ",
-        "querie9": "thống kê số sinh viên trượt môn (< 4)"
+        "querie5": "Phân tích sự ảnh hưởng của số tín chỉ lên điểm trung bình của sinh viên",
+        "querie6": "Tính điểm trung bình của sinh viên theo từng lớp",
+        "querie7": "Thống kê số sinh viên trượt môn (< 4)",
+        "querie8": "Truy vấn phát hiện sinh viên có khả năng bị cảnh báo học vụ dựa trên phân tích hành vi học tập qua các kỳ học."
     }
 
         #Từ điển Khoa với mã khoa và tên khoa

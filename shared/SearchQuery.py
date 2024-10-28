@@ -2,6 +2,7 @@ import argparse
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 from pyspark.sql import functions as F
+from func.table import Table as tb
 
 # Sử dụng argparse để lấy tham số từ dòng lệnh
 parser = argparse.ArgumentParser(description='Process some inputs for Spark job.')
@@ -43,12 +44,11 @@ filtered_df = df.filter(filter_condition)
 
 # Thu thập kết quả sau khi lọc
 results = filtered_df.collect()
+schema = filtered_df.schema
 
+table = tb.create(result=results,schema=schema)
+for row in table:
+    print(row)
 # In kết quả với tên cột và giá trị trên cùng một dòng
-for row in results:
-    row_dict = row.asDict()  # Chuyển đổi hàng thành từ điển
-    row_output = ", ".join([f"{col_name}: {row_dict[col_name]}" for col_name in row_dict])  # Kết hợp thành chuỗi
-    print(row_output)
-
 # Đóng Spark session
 spark.stop()

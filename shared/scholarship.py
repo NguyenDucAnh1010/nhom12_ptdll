@@ -2,6 +2,7 @@ import sys
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 from pyspark.sql import functions as F
+from func.table import Table as tb
 
 # Kiểm tra tham số dòng lệnh
 if len(sys.argv) != 3:
@@ -92,14 +93,10 @@ final_df.show()
 
 # Lưu kết quả vào danh sách để xử lý
 scholarship = final_df.collect()
-
+schema = final_df.schema
 # In thông tin sinh viên
-for student in scholarship:
-    print(f"Tên khoa: {student['namedepartment']}, "
-          f"Tên lớp: {student['nameclass']}, "
-          f"Mã sinh viên: {student['idstudent']}, "
-          f"Tên sinh viên: {student['namestudent']}, "
-          f"Số tín chỉ: {student['total_credit']}")
-
+table = tb.create(result=scholarship,schema=schema)
+for row in table:
+    print(row)
 # Đóng Spark session
 spark.stop()

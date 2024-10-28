@@ -3,6 +3,7 @@ from pyspark import SparkConf
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 import sys
+from func.table import Table as tb
 
 # Lấy tham số `term` từ dòng lệnh và chuyển thành int
 term = int(sys.argv[1])
@@ -48,6 +49,8 @@ total_passed_subjects_df = joined_df \
 
 # Hiển thị kết quả
 total_passed_subjects = total_passed_subjects_df.collect()
-
-for row in total_passed_subjects:
-    print(f"ID sinh viên: {row['idstudent']}, Tên sinh viên: {row['namestudent']}, Kỳ: {row['term']}, Tổng số môn đã qua: {row['total_passed_subjects']}")
+schema = total_passed_subjects_df.schema
+table = tb.create(result=total_passed_subjects,schema=schema)
+for row in table:
+    print(row)
+spark.stop()

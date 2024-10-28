@@ -3,6 +3,7 @@ from pyspark import SparkConf
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 import sys
+from func.table import Table as tb
 
 # Lấy mã môn học từ tham số dòng lệnh
 if len(sys.argv) != 2:
@@ -60,9 +61,9 @@ top_10_students_df = ranked_df \
 # Hiển thị kết quả
 top_10_students = top_10_students_df.collect()
 
-for student in top_10_students:
-    diem = str(round(float(student["grade"]), 2))
-    print(f"ID sinh viên: {student['idstudent']}, Tên sinh viên: {student['namestudent']}, Mã môn học: {student['idsubject']}, Tên môn học: {student['namesubject']}, Điểm: {diem}")
-
+schema = top_10_students_df.schema
+table = tb.create(result=top_10_students,schema=schema)
+for row in table:
+    print(row)
 # Đóng Spark session
 spark.stop()

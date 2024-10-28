@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark import SparkConf
 import sys
+from func.table import Table as tb
 
 # Nhận tham số dòng lệnh (có thể nhận từ tham số truyền vào từ ngoài)
 # term = int(sys.argv[1]) if len(sys.argv) > 1 else None
@@ -77,10 +78,10 @@ result_below_4_df = result_df.filter(result_df["grade"] < 4)
 
 # Thu thập và hiển thị kết quả
 result = result_below_4_df.collect()
+schema = result_below_4_df.schema
 
-for row in result:
-    diem = str(round(float(row["grade"]), 2))
-    print(f"Khoa: {row['namedepartment']}, Lớp: {row['nameclass']}, Môn: {row['namesubject']}, Kỳ: {row['term']}, Mã sinh viên: {row['idstudent']}, Tên sinh viên: {row['namestudent']}, Điểm: {diem}")
-
+table = tb.create(result=result,schema=schema)
+for row in table:
+    print(row)
 # Đóng Spark session
 spark.stop()
