@@ -72,6 +72,8 @@ class comboBoxQueriesDepartmentClass:
             
         self.comboBoxDepartment.bind("<<ComboboxSelected>>",updateContent)
     def getResult(self):
+        if(self.comboBoxClass.get()=="Chọn một tùy chọn"):
+            self.comboBoxClass.set("")
         return [self.comboBoxDepartment.get(),self.comboBoxClass.get()]
 
     
