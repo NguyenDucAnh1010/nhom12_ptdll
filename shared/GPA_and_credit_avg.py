@@ -53,7 +53,8 @@ gpa_credit_df = subject_df.groupBy("term") \
         F.avg("credit").alias("avg_credits")
     )\
     .orderBy("term")
-gpa_credit_df= gpa_credit_df.withColumn("Rate", (F.col("gpa"))/(F.col("avg_credits")))
+gpa_credit_df= gpa_credit_df.withColumn("Rate", (F.col("gpa"))/(F.col("avg_credits")))\
+                .select(F.col("term").alias("Kỳ học"),F.col("gpa").alias("GPA"),F.col("avg_credits").alias("Trung bình tín chỉ của một môn"),F.col("Rate").alias("Tỉ lệ đánh giá"))
 
 # Hiển thị kết quả
 # student_gpa_df = student_gpa_df.withColumn("gpa", round(student_gpa_df["gpa"], 2))
