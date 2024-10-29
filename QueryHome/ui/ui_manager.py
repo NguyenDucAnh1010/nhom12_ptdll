@@ -4,7 +4,7 @@ from QueryHome.query.query_executor import QueryExecutor
 from QueryHome.chart.chart_handler import ChartHandler
 import QueryHome.ui.treeView as treeView
 from QueryHome.ui.comboBox import ComboBox
-from QueryHome.ui.ComboBoxComponent.query import comboBoxQueriesDepartmentClass,comboBoxDepartmentTerm,comboBoxQueriesSubject,comboBoxQueriesTerm
+from QueryHome.ui.ComboBoxComponent.query import comboBoxQueriesDepartmentClass,comboBoxDepartmentTerm,comboBoxQueriesSubject,comboBoxQueriesTerm, comboBoxQueriesDepartment
 from func.chart import Chart
 import numpy as np
 
@@ -26,7 +26,7 @@ class UIManager:
         self.selected_subject = tk.StringVar(root)  
         self.dictionary_department = dictionary_department  
 
-# Các từ điển lớp
+        # Các từ điển lớp
         self.subjects = subjects  
         self.selected_subject = tk.StringVar(root)
         self.term = term 
@@ -106,10 +106,10 @@ class UIManager:
             None
         elif self.selected_query.get() == "Tính điểm trung bình của sinh viên theo từng lớp":
             comboBoxQueriesDepartmentClass.create(self)
-        elif self.selected_query.get() == "Thống kê số sinh viên trượt môn (< 4)":
+        elif self.selected_query.get() == "Thống kê số sinh viên trượt môn":
             comboBoxQueriesDepartmentClass.create(self)
-        elif self.selected_query.get() == "Truy vấn phát hiện sinh viên có khả năng bị cảnh báo học vụ dựa trên phân tích hành vi học tập qua các kỳ học.":
-            comboBoxQueriesDepartmentClass.create(self)
+        elif self.selected_query.get() == "Dự đoán sinh viên có khả năng bị cảnh báo học vụ dựa trên phân tích hành vi học tập qua 3 kỳ học gần nhất":
+            comboBoxQueriesDepartment.create(self)
 
     # def update_class_combobox(self, event):
     #     # Lấy mã khoa đã chọn
@@ -168,9 +168,13 @@ class UIManager:
                 result = query_executor.execute_query(query_key, selected_class=self.result_selected[1])  # Gọi phương thức từ lớp QueryExecutor
             elif(query_key=="querie7"):
                 self.result_selected = comboBoxQueriesDepartmentClass.getResult(self)
-                result = query_executor.execute_query(query_key, department=self.result_selected[0],class_name=self.result_selected[1])  # Gọi phương thức từ lớp QueryExecutor
+                class_name = self.result_selected[1]
+                if class_name == 'Chọn một tùy chọn':
+                    class_name = ''
+                result = query_executor.execute_query(query_key, department=self.result_selected[0],class_name=class_name)  # Gọi phương thức từ lớp QueryExecutor
             elif(query_key=="querie8"):
-                self.result_selected = comboBoxQueriesSubject.getResult(self)
+                self.result_selected = comboBoxQueriesDepartment.getResult(self)
+                result = query_executor.execute_query(query_key, name_department=self.result_selected[0])
             else:
                 result=None
                 
@@ -241,11 +245,14 @@ class UIManager:
                 yticklabels=None
             elif(query_key=="querie7"):
                 self.result_selected = comboBoxQueriesDepartmentClass.getResult(self)
-                result = chart_handler.get_data(query_key,department=self.result_selected[0],class_name=self.result_selected[1])  # Gọi phương thức từ lớp ChartHandler để vẽ biểu đồ
+                class_name = self.result_selected[1]
+                if class_name == 'Chọn một tùy chọn':
+                    class_name = ''
+                result = chart_handler.get_data(query_key,department=self.result_selected[0],class_name=class_name)  # Gọi phương thức từ lớp ChartHandler để vẽ biểu đồ
                 result_matrix = np.array(result)
                 last_column = result_matrix[:, -1]
                 term_column = result_matrix[1:,2]
-                if(self.result_selected[1] != ""):
+                if(class_name != ''):
                     title = f"Tỉ lệ sinh viên trượt môn lớp {self.result_selected[1]}"
                 else:
                     term_column = result_matrix[1:,1]

@@ -5,6 +5,7 @@ import abcd.classifyStudents as classifyStudents
 import abcd.top10 as top10
 import abcd.sumStudentPass as sumStudentPass
 import abcd.gpa_credit_avgChart as gpa_credit_avgChart
+import abcd.academicWarning as acacademicWarning
 class QueryExecutor:
     def __init__(self, queries):
         self.queries = queries
@@ -15,7 +16,8 @@ class QueryExecutor:
             "querie1": scholarship.scholarship_students  ,
             "querie2": classifyStudents.classify_students  ,
             "querie3": top10.run_spark_job,
-            "querie4": sumStudentPass.run_spark_job
+            "querie4": sumStudentPass.run_spark_job,
+            "querie8": acacademicWarning.academic_warning
         }
 
     def execute_query(self, query_key,*args,**kwargs):

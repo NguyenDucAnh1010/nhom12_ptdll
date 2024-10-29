@@ -13,8 +13,8 @@ def query(home_callback=None):
         "querie4": "Tổng số môn sinh viên đã qua theo từng kỳ",
         "querie5": "Phân tích sự ảnh hưởng của số tín chỉ lên điểm trung bình của sinh viên",
         "querie6": "Tính điểm trung bình của sinh viên theo từng lớp",
-        "querie7": "Thống kê số sinh viên trượt môn (< 4)",
-        "querie8": "Truy vấn phát hiện sinh viên có khả năng bị cảnh báo học vụ dựa trên phân tích hành vi học tập qua các kỳ học."
+        "querie7": "Thống kê số sinh viên trượt môn",
+        "querie8": "Dự đoán sinh viên có khả năng bị cảnh báo học vụ dựa trên phân tích hành vi học tập qua 3 kỳ học gần nhất"
     }
 
         #Từ điển Khoa với mã khoa và tên khoa
