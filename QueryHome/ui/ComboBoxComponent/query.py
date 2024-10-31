@@ -53,6 +53,14 @@ class comboBoxQueriesTerm:
         if(self.comboBoxTerm.get()=="Chọn một tùy chọn"):
             self.comboBoxTerm.set("")
         return [self.comboBoxTerm.get()]
+
+class comboBoxQueriesDepartment:
+    def create(self):
+        self.comboBoxDepartment = comboBox_UI.create_department(self)
+    def getResult(self):
+        if(self.comboBoxDepartment.get()=="Chọn một tùy chọn"):
+            self.comboBoxDepartment.set("")
+        return [self.comboBoxDepartment.get()]
     
 class comboBoxQueriesDepartmentClass:
     def create(self):
@@ -71,7 +79,10 @@ class comboBoxQueriesDepartmentClass:
             self.comboBoxClass['values'] = content
             
         self.comboBoxDepartment.bind("<<ComboboxSelected>>",updateContent)
+
     def getResult(self):
+        if(self.comboBoxClass.get()=="Chọn một tùy chọn"):
+            self.comboBoxClass.set("")
         return [self.comboBoxDepartment.get(),self.comboBoxClass.get()]
 
     

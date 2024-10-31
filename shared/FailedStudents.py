@@ -4,7 +4,6 @@ import sys
 from func.table import Table as tb
 
 # Nhận tham số dòng lệnh (có thể nhận từ tham số truyền vào từ ngoài)
-# term = int(sys.argv[1]) if len(sys.argv) > 1 else None
 name_department = sys.argv[1] if len(sys.argv) > 1 else None
 name_class = sys.argv[2] if len(sys.argv) > 2 else None
 
@@ -61,7 +60,6 @@ result_df = grades_df.alias("g") \
 #Doc ket qua da luu
 #result_df = spark.read.parquet("/opt/shared/failed_students_data.parquet")
 
-
 ## Áp dụng điều kiện lọc dựa trên giá trị của name_class và name_department
 if name_class:
     result_df = result_df.filter((result_df["namedepartment"] == name_department) & (result_df["nameclass"] == name_class))
@@ -77,6 +75,7 @@ result_below_4_df = result_df.filter(result_df["grade"] < 4)
 # result_below_4_df.write.mode("overwrite").parquet("/opt/shared/failed_students.parquet")
 
 # Thu thập và hiển thị kết quả
+
 result = result_below_4_df.collect()
 schema = result_below_4_df.schema
 

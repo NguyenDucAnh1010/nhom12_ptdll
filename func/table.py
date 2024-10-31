@@ -9,6 +9,7 @@ class Table:
             table_data.append([row[col] for col in headers])
         
         return table_data
+    
     def convert_data(data):
         data_arr = []
         for line in data:

@@ -1,10 +1,11 @@
-import abcd.failedStudents as failedStudents
-import abcd.gpa_avg_of_student as gpa_avg_of_student
-import abcd.scholarship as scholarship
-import abcd.classifyStudents as classifyStudents
-import abcd.top10 as top10
-import abcd.sumStudentPass as sumStudentPass
-import abcd.gpa_credit_avgChart as gpa_credit_avgChart
+import query_Spark.failedStudents as failedStudents
+import query_Spark.gpa_avg_of_student as gpa_avg_of_student
+import query_Spark.scholarship as scholarship
+import query_Spark.classifyStudents as classifyStudents
+import query_Spark.top10 as top10
+import query_Spark.sumStudentPass as sumStudentPass
+import query_Spark.gpa_credit_avgChart as gpa_credit_avgChart
+import query_Spark.academicWarning as acacademicWarning
 class QueryExecutor:
     def __init__(self, queries):
         self.queries = queries
@@ -15,7 +16,8 @@ class QueryExecutor:
             "querie1": scholarship.scholarship_students  ,
             "querie2": classifyStudents.classify_students  ,
             "querie3": top10.run_spark_job,
-            "querie4": sumStudentPass.run_spark_job
+            "querie4": sumStudentPass.run_spark_job,
+            "querie8": acacademicWarning.academic_warning
         }
 
     def execute_query(self, query_key,*args,**kwargs):
