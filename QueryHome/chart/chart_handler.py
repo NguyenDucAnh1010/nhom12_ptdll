@@ -1,10 +1,10 @@
-import abcd.failedStudentsChart as failedStudentsChart
-import abcd.scholarship as scholarship
-import abcd.classifyStudents as classifyStudents
-import abcd.top10 as top10
-import abcd.sumStudentPass as sumStudentPasss
-import abcd.gpa_credit_avgChart as gpa_credit_avgChart
-import abcd.gpa_avg_of_student as gpa_avg_of_student
+import query_Spark.failedStudentsChart as failedStudentsChart
+import query_Spark.scholarship as scholarship
+import query_Spark.classifyStudents as classifyStudents
+import query_Spark.top10 as top10
+import query_Spark.sumStudentPass as sumStudentPasss
+import query_Spark.gpa_credit_avgChart as gpa_credit_avgChart
+import query_Spark.gpa_avg_of_student as gpa_avg_of_student
 class ChartHandler:
     def __init__(self):
         # Từ điển ánh xạ giữa truy vấn và hàm vẽ biểu đồ

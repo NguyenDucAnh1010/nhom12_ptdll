@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import abcd.failedStudents as failedStudents
-import abcd.failedStudentsChart as failedStudentsChart
-import abcd.gpa_avg_of_student as gpa_avg_of_student
+import query_Spark.failedStudents as failedStudents
+import query_Spark.failedStudentsChart as failedStudentsChart
+import query_Spark.gpa_avg_of_student as gpa_avg_of_student
 
 def query(home_callback=None):
     # Tạo giao diện tkinter

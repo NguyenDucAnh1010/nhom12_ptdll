@@ -4,8 +4,8 @@ from tkinter import ttk
 from cassandra.cluster import Cluster  # Cassandra driver for Python
 from cassandra.query import SimpleStatement
 from tkinter import messagebox
-import abcd.import_cmd as import_cmd
-import abcd.searchQuery as searchQuery
+import query_Spark.import_cmd as import_cmd
+import query_Spark.searchQuery as searchQuery
 from dataclass import Department,Student,Subject,Grade,Classes
 
 def query(home_callback=None):
