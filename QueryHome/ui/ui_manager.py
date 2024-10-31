@@ -100,7 +100,7 @@ class UIManager:
             comboBoxQueriesSubject.create(self)
         elif self.selected_query.get() == "Top 10 sinh viên có điểm cao nhất theo từng môn":
             comboBoxQueriesSubject.create(self)
-        elif self.selected_query.get() == "Tổng số môn sinh viên đã qua theo từng kỳ":
+        elif self.selected_query.get() == "Danh sách số môn sinh viên đã qua theo từng kỳ":
             comboBoxQueriesTerm.create(self)
         elif self.selected_query.get() == "Phân tích sự ảnh hưởng của số tín chỉ lên điểm trung bình của sinh viên":
             None
