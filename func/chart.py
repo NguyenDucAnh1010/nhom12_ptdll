@@ -22,7 +22,7 @@ class Chart:
             ax.set_yticklabels(yticklabels,rotation=0,ha="center")
         # Định dạng trục y thành phần trăm
         # ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{y:.0%}'))
-
+        plt.legend(loc='upper left', bbox_to_anchor=(1.005, 0.99), borderaxespad=0)
         # Hiển thị biểu đồ
         plt.xticks(rotation=0)
         plt.tight_layout()

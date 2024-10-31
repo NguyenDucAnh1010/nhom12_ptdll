@@ -238,10 +238,12 @@ class UIManager:
             # Gọi lớp ChartHandler để hiển thị biểu đồ
             if(query_key=="querie5"):
                 result = chart_handler.get_data(query_key)  # Gọi phương thức từ lớp ChartHandler để vẽ biểu đồ
-                x_name = ""
-                y_name = "Tỉ lệ điểm trung bình"
+                result_matrix = np.array(result)
+                result = result_matrix[:, 1:].tolist()
+                x_name = "Kỳ học"
+                y_name = ""
                 title ="Tỉ lệ tín chỉ ảnh hưởng tới chất lượng điểm trung bình"
-                xticklabels=None
+                xticklabels=[1,2,3]
                 yticklabels=None
             elif(query_key=="querie7"):
                 self.result_selected = comboBoxQueriesDepartmentClass.getResult(self)
