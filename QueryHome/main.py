@@ -10,7 +10,7 @@ def query(home_callback=None):
         "querie1": "Danh sách học bổng (điểm >4 và số tín >12)",
         "querie2": "Phân loại sinh viên dựa vào điểm trung bình theo từng môn",
         "querie3": "Top 10 sinh viên có điểm cao nhất theo từng môn",
-        "querie4": "Tổng số môn sinh viên đã qua theo từng kỳ",
+        "querie4": "Danh sách số môn sinh viên đã qua theo từng kỳ",
         "querie5": "Phân tích sự ảnh hưởng của số tín chỉ lên điểm trung bình của sinh viên",
         "querie6": "Tính điểm trung bình của sinh viên theo từng lớp",
         "querie7": "Thống kê số sinh viên trượt môn",
