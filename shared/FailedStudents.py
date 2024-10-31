@@ -4,7 +4,6 @@ import sys
 from func.table import Table as tb
 
 # Nhận tham số dòng lệnh (có thể nhận từ tham số truyền vào từ ngoài)
-# term = int(sys.argv[1]) if len(sys.argv) > 1 else None
 name_department = sys.argv[1] if len(sys.argv) > 1 else None
 name_class = sys.argv[2] if len(sys.argv) > 2 else None
 
@@ -60,7 +59,6 @@ result_df = grades_df.alias("g") \
 
 #Doc ket qua da luu
 #result_df = spark.read.parquet("/opt/shared/failed_students_data.parquet")
-
 
 ## Áp dụng điều kiện lọc dựa trên giá trị của name_class và name_department
 if name_class:

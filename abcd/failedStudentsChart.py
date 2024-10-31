@@ -1,7 +1,4 @@
-import tkinter as tk
 import subprocess
-import matplotlib.pyplot as plt
-import pandas as pd
 from func.table import Table as tb
 from func.roundNumber import roundData
 
@@ -29,7 +26,6 @@ def run_spark_job(**kwargs):
     except Exception as e:
         return [], [f"Lỗi khi thực thi: {e}"]
     
-import pandas as pd
 
 # def process_data_to_dataframe(data):
 #     # Tách dữ liệu thành các phần tử

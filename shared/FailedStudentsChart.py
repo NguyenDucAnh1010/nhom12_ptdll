@@ -61,8 +61,8 @@ if name_class:
     
     failed_rate_by_term = failed_students_by_term \
         .join(total_students_by_term, ["namedepartment", "nameclass", "term"]) \
-        .withColumn("failed_rate", (failed_students_by_term["count"] / total_students_by_term["count"]) * 100) \
-        .select("namedepartment", "nameclass", "term", "failed_rate")\
+        .withColumn("Tỷ lệ trượt", (failed_students_by_term["count"] / total_students_by_term["count"]) * 100) \
+        .select("namedepartment", "nameclass", "term", "Tỷ lệ trượt")\
         .orderBy("term")
 else:
     # Tính toán số sinh viên trượt môn theo từng kỳ cho tất cả các lớp trong khoa
@@ -79,8 +79,8 @@ else:
     
     failed_rate_by_term = failed_students_by_term \
         .join(total_students_by_term, ["namedepartment","term"]) \
-        .withColumn("failed_rate", (failed_students_by_term["count"] / total_students_by_term["count"]) * 100) \
-        .select("namedepartment", "term", "failed_rate")\
+        .withColumn("Tỷ lệ trượt", (failed_students_by_term["count"] / total_students_by_term["count"]) * 100) \
+        .select("namedepartment", "term", "Tỷ lệ trượt")\
         .orderBy("term")
 
 
@@ -89,7 +89,6 @@ else:
 # total_students_by_term.show()
 
 # Tính toán tỷ lệ trượt môn theo khoa và kỳ
-
 
 # failed_rate_by_term.show()
 # Thu thập và hiển thị kết quả
